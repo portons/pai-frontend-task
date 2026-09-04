@@ -1,9 +1,8 @@
-/** One chat message as delivered by the API (see assets/msgs.json). */
+/** One chat message, as the app uses it (parsed from assets/msgs.json). */
 export interface Message {
   id: string
   incoming: boolean
   from: string
   text: string
-  /** "MM/DD/YY hh:mm AM" */
-  created: string
+  created: Date
 }

@@ -19,14 +19,19 @@
       <p class="whitespace-break-spaces break-words">
         <HighlightedText :text="item.text" :id="item.id" />
       </p>
-      <span class="text-xs text-gray-500 pt-1" :class="item.incoming ? 'self-end' : 'self-start'">
-        <HighlightedText :text="item.created" :id="item.id" field="created" />
-      </span>
+      <time
+        class="text-xs text-gray-500 pt-1"
+        :class="item.incoming ? 'self-end' : 'self-start'"
+        :datetime="item.created.toISOString()"
+      >
+        <HighlightedText :text="formatDateTime(item.created)" :id="item.id" field="created" />
+      </time>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { formatDateTime } from '../lib/dates'
 import { initialOf } from '../lib/initial'
 import { HighlightedText } from '../search'
 import type { Message } from '../types'
