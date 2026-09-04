@@ -1,15 +1,11 @@
 <template>
-  <Transition
-    enter-active-class="transition duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none"
-    enter-from-class="-translate-y-2 scale-95 opacity-0"
-    leave-active-class="transition duration-150 ease-in motion-reduce:transition-none"
-    leave-to-class="-translate-y-2 scale-95 opacity-0"
-  >
+  <Transition name="find-bar">
     <div
       v-if="isOpen"
       role="search"
       class="absolute top-3 right-3 z-10 flex items-center gap-1 rounded-xl bg-white/85 px-2 py-1.5 shadow-lg ring-1 ring-black/10 backdrop-blur-md"
       :class="{ 'find-shake': shaking }"
+      :style="vars"
       @animationend="shaking = false"
     >
       <svg class="size-4 shrink-0 text-gray-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -26,8 +22,8 @@
         ref="input"
         v-model="query"
         type="text"
-        placeholder="Find in conversation"
-        aria-label="Find in conversation"
+        :placeholder="config.text.placeholder"
+        :aria-label="config.text.placeholder"
         class="w-48 bg-transparent px-1 text-sm text-gray-900 outline-none placeholder:text-gray-400"
         @keydown.enter.exact.prevent="jump(next)"
         @keydown.shift.enter.prevent="jump(prev)"
@@ -71,13 +67,23 @@ import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 import { useFind } from './useFind'
 import { useFindHotkeys } from './useFindHotkeys'
 
-const { query, isOpen, total, current, open, close, next, prev } = useFind()
+const { query, isOpen, total, current, open, close, next, prev, config } = useFind()
+
+const vars = {
+  '--find-bar-enter-ms': `${config.motion.barEnterMs}ms`,
+  '--find-bar-leave-ms': `${config.motion.barLeaveMs}ms`,
+  '--find-shake-ms': `${config.motion.shakeMs}ms`,
+}
 
 const input = useTemplateRef('input')
 const shaking = ref(false)
 
 const announcement = computed(() =>
-  !query.value ? '' : total.value ? `${current.value + 1} of ${total.value}` : 'No results',
+  !query.value
+    ? ''
+    : total.value
+      ? `${current.value + 1} of ${total.value}`
+      : config.text.noResults,
 )
 
 /** Step through matches, or shake when there is nothing to step to. */
@@ -131,10 +137,28 @@ useFindHotkeys({
 </script>
 
 <style scoped>
-.find-shake {
-  animation: find-shake 300ms ease-in-out;
+.find-bar-enter-active {
+  transition:
+    opacity var(--find-bar-enter-ms) cubic-bezier(0.34, 1.56, 0.64, 1),
+    translate var(--find-bar-enter-ms) cubic-bezier(0.34, 1.56, 0.64, 1),
+    scale var(--find-bar-enter-ms) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.find-bar-leave-active {
+  transition:
+    opacity var(--find-bar-leave-ms) ease-in,
+    translate var(--find-bar-leave-ms) ease-in,
+    scale var(--find-bar-leave-ms) ease-in;
+}
+.find-bar-enter-from,
+.find-bar-leave-to {
+  opacity: 0;
+  translate: 0 -8px;
+  scale: 0.95;
 }
 
+.find-shake {
+  animation: find-shake var(--find-shake-ms) ease-in-out;
+}
 @keyframes find-shake {
   25% {
     translate: -4px 0;
@@ -145,7 +169,10 @@ useFindHotkeys({
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .find-bar-enter-active,
+  .find-bar-leave-active,
   .find-shake {
+    transition: none;
     animation: none;
   }
 }

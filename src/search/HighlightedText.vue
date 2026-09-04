@@ -7,6 +7,7 @@
       :aria-current="seg.match.index === current ? 'true' : undefined"
       class="find-mark"
       :class="{ 'find-mark-active': seg.match.index === current }"
+      :style="vars"
       >{{ seg.text }}</mark
     >
     <template v-else>{{ seg.text }}</template>
@@ -25,32 +26,48 @@ const props = defineProps({
   id: { required: true },
 })
 
-const { matchesFor, current } = useFind()
+const { matchesFor, current, config } = useFind()
 const segments = computed(() => segment(props.text, matchesFor(props.id)))
+
+const vars = {
+  '--find-match': config.colors.match,
+  '--find-match-text': config.colors.matchText,
+  '--find-active': config.colors.activeMatch,
+  '--find-active-text': config.colors.activeMatchText,
+  '--find-outline': config.colors.activeMatchOutline,
+  '--find-ring-ms': `${config.motion.ringMs}ms`,
+}
 </script>
 
 <style scoped>
 .find-mark {
   border-radius: 3px;
   padding: 0 2px;
-  color: inherit;
-  background: var(--color-yellow-200);
-  transition: background-color 150ms;
+  background: var(--find-match);
+  color: var(--find-match-text);
+  transition:
+    background-color 150ms,
+    color 150ms;
 }
 
 /* The ring is a box-shadow, not a transform, so a long match still wraps. */
 .find-mark-active {
-  color: white;
-  background: var(--color-orange-500);
-  animation: find-ring 450ms ease-out;
+  background: var(--find-active);
+  color: var(--find-active-text);
+  box-shadow: 0 0 0 1.5px var(--find-outline);
+  animation: find-ring var(--find-ring-ms) ease-out;
 }
 
 @keyframes find-ring {
   from {
-    box-shadow: 0 0 0 6px --alpha(var(--color-orange-500) / 50%);
+    box-shadow:
+      0 0 0 1.5px var(--find-outline),
+      0 0 0 7px color-mix(in srgb, var(--find-active) 60%, transparent);
   }
   to {
-    box-shadow: 0 0 0 0 transparent;
+    box-shadow:
+      0 0 0 1.5px var(--find-outline),
+      0 0 0 0 transparent;
   }
 }
 

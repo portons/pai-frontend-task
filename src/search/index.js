@@ -9,9 +9,12 @@
  *   <HighlightedText :text="msg.text" :id="msg.id" />
  *
  * ⌘F / Ctrl+F opens, Enter / Shift+Enter (or ⌘G / ⌘⇧G) step, Esc closes.
+ * Colours, motion and copy are tunable through provideFind's `config` option;
+ * see config.js.
  */
 export { provideFind, useFind } from './useFind'
 export { createFind } from './createFind'
+export { defaultConfig } from './config'
 export { findRanges, segment } from './match'
 export { default as FindBar } from './FindBar.vue'
 export { default as HighlightedText } from './HighlightedText.vue'

@@ -1,4 +1,5 @@
 import { computed, ref, toValue, watch } from 'vue'
+import { mergeConfig } from './config'
 import { findRanges } from './match'
 
 /** @typedef {{ start: number, end: number, index: number, id: unknown }} Match */
@@ -15,10 +16,17 @@ const NONE = Object.freeze([])
  * @param {(item: object) => unknown} [options.getId]
  * @param {(matches: Match[]) => number | Promise<number>} [options.startAt]
  *   Which match to land on when the result set changes. Defaults to the first.
+ * @param {Partial<typeof import('./config').defaultConfig>} [options.config]
+ *   Colours, motion and copy overrides; see config.js for the defaults.
  */
 export function createFind(
   items,
-  { getText = (item) => item.text ?? '', getId = (item) => item.id, startAt = () => 0 } = {},
+  {
+    getText = (item) => item.text ?? '',
+    getId = (item) => item.id,
+    startAt = () => 0,
+    config,
+  } = {},
 ) {
   const query = ref('')
   const isOpen = ref(false)
@@ -59,6 +67,7 @@ export function createFind(
   }
 
   return {
+    config: mergeConfig(config),
     query,
     isOpen,
     total,
