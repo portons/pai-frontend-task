@@ -14,6 +14,9 @@ export const defaultConfig = {
     activeMatchText: '#1c1917',
     /** Thin outline so the current match reads as an object, not just a warmer fill. */
     activeMatchOutline: '#b45309',
+    /** Scrollbar tick marks, one per match. */
+    tick: '#f59e0b',
+    activeTick: '#b45309',
   },
   motion: {
     /** Contracting ring when a match becomes current. */

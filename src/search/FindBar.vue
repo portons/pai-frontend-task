@@ -60,10 +60,12 @@
       </button>
     </div>
   </Transition>
+  <FindTicks />
 </template>
 
 <script setup>
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
+import FindTicks from './FindTicks.vue'
 import { useFind } from './useFind'
 import { useFindHotkeys } from './useFindHotkeys'
 
