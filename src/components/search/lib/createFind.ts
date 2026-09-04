@@ -1,12 +1,9 @@
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
-import { mergeConfig } from '../config';
+import { defaultOptions, mergeConfig } from '../config';
 import { findRanges } from './match';
 import type { Find, FindOptions, Match } from '../types';
 
 const NONE: readonly never[] = Object.freeze([]);
-
-/** Read a property off an item whose shape the module does not know. */
-const prop = (item: object, key: string): unknown => (item as Record<string, unknown>)[key];
 
 /**
  * Find-in-page state over a list of messages. Knows about text and indices,
@@ -14,13 +11,9 @@ const prop = (item: object, key: string): unknown => (item as Record<string, unk
  */
 export function createFind<T extends object>(
   items: MaybeRefOrGetter<T[]>,
-  {
-    fields = { text: (item) => prop(item, 'text') },
-    getId = (item) => prop(item, 'id') as PropertyKey,
-    startAt = () => 0,
-    config,
-  }: FindOptions<T> = {},
+  options: FindOptions<T> = {},
 ): Find<T> {
+  const { fields, getId, startAt, config } = { ...defaultOptions, ...options };
   const query = ref('');
   const isOpen = ref(false);
   /** Position in the flat match list, -1 when there is nothing to point at. */

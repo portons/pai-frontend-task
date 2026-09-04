@@ -1,4 +1,4 @@
-import type { FindConfig, FindConfigOverrides } from './types';
+import type { FindConfig, FindConfigOverrides, FindOptions } from './types';
 
 /**
  * Every tunable of the find module in one place. Override any subset per
@@ -42,6 +42,19 @@ export const defaultConfig: FindConfig = {
     subtitle: null,
     body: 'text',
   },
+};
+
+/** Read a property off an item whose shape the module does not know. */
+const prop = (item: object, key: string): unknown => (item as Record<string, unknown>)[key];
+
+/**
+ * How the finder reads items unless told otherwise: search the `text`
+ * field, identify items by `id`, start from the first match.
+ */
+export const defaultOptions: Required<Omit<FindOptions<object>, 'config'>> = {
+  fields: { text: (item) => prop(item, 'text') },
+  getId: (item) => prop(item, 'id') as PropertyKey,
+  startAt: () => 0,
 };
 
 /** Merge one level of sections, so a partial override keeps its siblings. */
