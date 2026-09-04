@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { initialOf } from '../lib/initial'
+import { initialOf } from '../../lib/initial'
 
 const info = {
   name: 'John Doe',

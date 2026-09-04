@@ -27,8 +27,8 @@
 </template>
 
 <script setup lang="ts">
-import ChatHeader from './components/ChatHeader.vue'
-import ChatMessage from './components/ChatMessage.vue'
+import ChatHeader from './components/chat/ChatHeader.vue'
+import ChatMessage from './components/chat/ChatMessage.vue'
 import { FindBar, provideFind } from './components/search'
 import raw from './assets/msgs.json'
 import { formatDateTime, formatDay, parseCreated } from './lib/dates'
