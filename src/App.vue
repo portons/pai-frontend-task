@@ -18,5 +18,5 @@ import ChatMessage from './components/ChatMessage.vue'
 import { FindBar, provideFind } from './search'
 import items from './assets/msgs.json'
 
-provideFind(items)
+provideFind(items, { getMeta: (item) => ({ title: item.from, subtitle: item.created }) })
 </script>

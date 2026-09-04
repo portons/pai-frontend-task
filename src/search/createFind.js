@@ -2,7 +2,7 @@ import { computed, ref, toValue, watch } from 'vue'
 import { mergeConfig } from './config'
 import { findRanges } from './match'
 
-/** @typedef {{ start: number, end: number, index: number, id: unknown }} Match */
+/** @typedef {{ start: number, end: number, index: number, id: unknown, item: object }} Match */
 
 const NONE = Object.freeze([])
 
@@ -14,6 +14,8 @@ const NONE = Object.freeze([])
  * @param {object} [options]
  * @param {(item: object) => string} [options.getText]
  * @param {(item: object) => unknown} [options.getId]
+ * @param {(item: object) => { title?: string, subtitle?: string }} [options.getMeta]
+ *   Who and when, for the tick-mark preview. Defaults to nothing.
  * @param {(matches: Match[]) => number | Promise<number>} [options.startAt]
  *   Which match to land on when the result set changes. Defaults to the first.
  * @param {Partial<typeof import('./config').defaultConfig>} [options.config]
@@ -24,6 +26,7 @@ export function createFind(
   {
     getText = (item) => item.text ?? '',
     getId = (item) => item.id,
+    getMeta = () => ({}),
     startAt = () => 0,
     config,
   } = {},
@@ -44,7 +47,7 @@ export function createFind(
       const ranges = findRanges(getText(item), query.value)
       if (ranges.length === 0) continue
       const id = getId(item)
-      const matches = ranges.map((range, i) => ({ ...range, id, index: list.length + i }))
+      const matches = ranges.map((range, i) => ({ ...range, id, item, index: list.length + i }))
       byId.set(id, matches)
       list.push(...matches)
     }
@@ -69,6 +72,8 @@ export function createFind(
 
   return {
     config: mergeConfig(config),
+    getText,
+    getMeta,
     query,
     isOpen,
     /** Every match in document order, each with its global index. */

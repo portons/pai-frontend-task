@@ -10,30 +10,67 @@
       :key="tick.index"
       type="button"
       tabindex="-1"
-      :title="`Match ${tick.index + 1} of ${total}`"
       class="find-tick pointer-events-auto absolute inset-x-0.5 -translate-y-1/2 rounded-full"
       :class="{ 'find-tick-active': tick.index === current }"
       :style="{ top: `${tick.pct}%` }"
+      @mouseenter="hovered = tick"
+      @mouseleave="hovered = null"
       @click="goTo(tick.index)"
     />
+
+    <Transition name="find-pop">
+      <div
+        v-if="preview"
+        class="find-pop absolute right-full mr-2 w-64 rounded-lg bg-white/95 p-3 text-xs shadow-xl ring-1 ring-black/10 backdrop-blur-md"
+        :class="preview.anchor"
+        :style="{ top: `${preview.pct}%` }"
+      >
+        <div
+          v-if="preview.title || preview.subtitle"
+          class="mb-1 flex items-baseline justify-between gap-3"
+        >
+          <span class="truncate font-semibold text-gray-900" v-text="preview.title" />
+          <span class="shrink-0 text-gray-400 tabular-nums" v-text="preview.subtitle" />
+        </div>
+        <p class="line-clamp-3 leading-relaxed text-gray-700">
+          <template v-for="(seg, i) in preview.segments" :key="i">
+            <mark
+              v-if="seg.match"
+              class="find-pop-mark"
+              :class="{ 'find-pop-mark-active': seg.match.index === preview.index }"
+              >{{ seg.text }}</mark
+            >
+            <template v-else>{{ seg.text }}</template>
+          </template>
+        </p>
+        <div class="mt-1.5 text-[10px] font-medium tracking-wide text-gray-400 uppercase">
+          Match {{ preview.index + 1 }} of {{ total }}
+        </div>
+        <span class="find-pop-arrow" />
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { nextTick, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 import { findMarks, scrollParent } from './dom'
+import { segment } from './match'
 import { useFind } from './useFind'
 
 /** px, must match the `w-3` track above. */
 const TRACK_WIDTH = 12
 
-const { matches, current, total, goTo, config } = useFind()
+const { matches, matchesFor, current, total, goTo, getText, getMeta, config } = useFind()
 const root = useTemplateRef('root')
 const ticks = ref([])
 const frame = ref({})
 const vars = {
   '--find-tick': config.colors.tick,
   '--find-tick-active': config.colors.activeTick,
+  '--find-match': config.colors.match,
+  '--find-active': config.colors.activeMatch,
+  '--find-active-text': config.colors.activeMatchText,
 }
 
 // Chrome's scrollbar markers: the track covers the list's scroll area and
@@ -74,6 +111,22 @@ function observe(scroller) {
   observer.observe(scroller)
 }
 onUnmounted(() => observer?.disconnect())
+
+// Hovering a tick previews its message, anchored beside the tick and kept
+// inside the track near the top and bottom edges.
+const hovered = ref(null)
+const preview = computed(() => {
+  const match = hovered.value && matches.value[hovered.value.index]
+  if (!match) return null
+  const { index, pct } = hovered.value
+  return {
+    index,
+    pct,
+    ...getMeta(match.item),
+    segments: segment(getText(match.item), matchesFor(match.id)),
+    anchor: pct < 15 ? 'find-pop-top' : pct > 85 ? 'find-pop-bottom' : 'find-pop-center',
+  }
+})
 </script>
 
 <style scoped>
@@ -86,6 +139,12 @@ onUnmounted(() => observer?.disconnect())
     opacity 150ms,
     background-color 150ms;
 }
+/* Ticks are two pixels tall; give the pointer something to land on. */
+.find-tick::before {
+  content: '';
+  position: absolute;
+  inset: -4px 0;
+}
 .find-tick:hover {
   opacity: 1;
 }
@@ -95,8 +154,67 @@ onUnmounted(() => observer?.disconnect())
   background: var(--find-tick-active);
   box-shadow: 0 0 0 1px white;
 }
+
+.find-pop {
+  transform-origin: right center;
+}
+.find-pop-center {
+  translate: 0 -50%;
+}
+.find-pop-top {
+  translate: 0 -12px;
+}
+.find-pop-bottom {
+  translate: 0 calc(-100% + 12px);
+}
+.find-pop-arrow {
+  position: absolute;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-top: 1px solid rgb(0 0 0 / 0.1);
+  border-right: 1px solid rgb(0 0 0 / 0.1);
+  rotate: 45deg;
+  translate: 0 -50%;
+}
+.find-pop-center .find-pop-arrow {
+  top: 50%;
+}
+.find-pop-top .find-pop-arrow {
+  top: 12px;
+}
+.find-pop-bottom .find-pop-arrow {
+  top: calc(100% - 12px);
+}
+
+.find-pop-mark {
+  border-radius: 3px;
+  padding: 0 2px;
+  color: inherit;
+  background: var(--find-match);
+}
+.find-pop-mark-active {
+  background: var(--find-active);
+  color: var(--find-active-text);
+}
+
+.find-pop-enter-active,
+.find-pop-leave-active {
+  transition:
+    opacity 120ms ease-out,
+    scale 120ms ease-out;
+}
+.find-pop-enter-from,
+.find-pop-leave-to {
+  opacity: 0;
+  scale: 0.96;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .find-tick {
+  .find-tick,
+  .find-pop-enter-active,
+  .find-pop-leave-active {
     transition: none;
   }
 }
