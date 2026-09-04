@@ -10,9 +10,9 @@ const ROOT_KEY: InjectionKey<MaybeRefOrGetter<HTMLElement | null>> = Symbol.for(
 
 export function provideFind<T extends object>(
   items: MaybeRefOrGetter<T[]>,
-  options: FindProviderOptions<T> = {},
+  options: FindProviderOptions<T>,
 ): Find<T> {
-  const { root = null, ...findOptions } = options;
+  const { root, ...findOptions } = options;
   const find = createFind(items, {
     startAt: () => nearestVisibleMatch(root),
     ...findOptions,

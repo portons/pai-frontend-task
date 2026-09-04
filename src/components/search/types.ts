@@ -62,7 +62,7 @@ export interface FindOptions<T> {
 }
 
 export interface FindProviderOptions<T> extends FindOptions<T> {
-  root?: MaybeRefOrGetter<HTMLElement | null>;
+  root: MaybeRefOrGetter<HTMLElement | null>;
 }
 
 export interface Find<T = unknown> {
