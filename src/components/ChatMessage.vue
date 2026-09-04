@@ -3,7 +3,7 @@
     <div
       class="w-9 h-9 rounded-full flex items-center justify-center text-lg text-white flex-shrink-0"
       :class="item.incoming ? 'bg-green-600' : 'bg-blue-600'"
-      v-text="item.initials"
+      v-text="initialOf(item.from)"
     />
     <div
       class="flex flex-col gap-y-1 px-4 py-1 text-sm"
@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import { initialOf } from '../lib/initial'
 import { HighlightedText } from '../search'
 import type { Message } from '../types'
 

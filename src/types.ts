@@ -3,7 +3,6 @@ export interface Message {
   id: string
   incoming: boolean
   from: string
-  initials: string
   text: string
   /** "MM/DD/YY hh:mm AM" */
   created: string
