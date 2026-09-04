@@ -12,11 +12,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ChatHeader from './components/ChatHeader.vue'
 import ChatMessage from './components/ChatMessage.vue'
 import { FindBar, provideFind } from './search'
-import items from './assets/msgs.json'
+import raw from './assets/msgs.json'
+import type { Message } from './types'
+
+const items: Message[] = raw
 
 provideFind(items, {
   fields: { from: (m) => m.from, text: (m) => m.text, created: (m) => m.created },

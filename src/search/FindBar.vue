@@ -63,7 +63,7 @@
   <FindTicks />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
 import { selectText } from './dom'
 import FindTicks from './FindTicks.vue'
@@ -78,7 +78,7 @@ const vars = {
   '--find-shake-ms': `${config.motion.shakeMs}ms`,
 }
 
-const input = useTemplateRef('input')
+const input = useTemplateRef<HTMLInputElement>('input')
 const shaking = ref(false)
 
 const announcement = computed(() =>
@@ -98,7 +98,7 @@ function dismiss() {
 }
 
 /** Step through matches, or shake when there is nothing to step to. */
-function jump(step) {
+function jump(step: () => void) {
   if (!isOpen.value) return
   if (total.value) step()
   else shaking.value = true
@@ -129,12 +129,12 @@ async function focusInput() {
 }
 
 // Focus moves into the bar on open and back to where it was on close.
-let previouslyFocused = null
+let previouslyFocused: Element | null = null
 watch(isOpen, (opened) => {
   if (opened) {
     previouslyFocused = document.activeElement
     focusInput()
-  } else if (previouslyFocused?.isConnected) {
+  } else if (previouslyFocused instanceof HTMLElement && previouslyFocused.isConnected) {
     previouslyFocused.focus()
   }
 })

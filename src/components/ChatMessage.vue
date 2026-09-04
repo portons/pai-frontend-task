@@ -46,8 +46,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { HighlightedText } from '../search'
+import type { Message } from '../types'
 
-defineProps(['item'])
+defineProps<{ item: Message }>()
 </script>

@@ -6,11 +6,12 @@ import { findMarks, scrollParent } from './dom'
  * top of the viewport, so a new query never yanks the reader away from where
  * they were.
  */
-export async function nearestVisibleMatch() {
+export async function nearestVisibleMatch(): Promise<number> {
   await nextTick()
   const marks = findMarks()
-  if (marks.length === 0) return 0
-  const viewportTop = scrollParent(marks[0]).getBoundingClientRect().top
+  const first = marks[0]
+  if (!first) return 0
+  const viewportTop = scrollParent(first).getBoundingClientRect().top
   for (const mark of marks) {
     if (mark.getBoundingClientRect().bottom >= viewportTop) return Number(mark.dataset.findIndex)
   }

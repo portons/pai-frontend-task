@@ -1,53 +1,41 @@
-import { computed, ref, toValue, watch } from 'vue'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { mergeConfig } from './config'
 import { findRanges } from './match'
+import type { Find, FindOptions, Match } from './types'
 
-/** @typedef {{ start: number, end: number, index: number, id: unknown, item: object, field: string }} Match */
+const NONE: readonly never[] = Object.freeze([])
 
-const NONE = Object.freeze([])
+/** Read a property off an item whose shape the module does not know. */
+const prop = (item: object, key: string): unknown => (item as Record<string, unknown>)[key]
 
 /**
  * Find-in-page state over a list of messages. Knows about text and indices,
  * nothing about the DOM.
- *
- * @param {import('vue').MaybeRefOrGetter<object[]>} items
- * @param {object} [options]
- * @param {Record<string, (item: object) => unknown>} [options.fields]
- *   Searchable fields by name, in the order they appear on screen (that
- *   order is the order matches are stepped through). Defaults to `text`.
- * @param {(item: object) => unknown} [options.getId]
- * @param {(matches: Match[]) => number | Promise<number>} [options.startAt]
- *   Which match to land on when the result set changes. Defaults to the first.
- * @param {Partial<typeof import('./config').defaultConfig>} [options.config]
- *   Colours, motion and copy overrides; see config.js for the defaults.
  */
-export function createFind(
-  items,
+export function createFind<T extends object>(
+  items: MaybeRefOrGetter<T[]>,
   {
-    fields = { text: (item) => item.text },
-    getId = (item) => item.id,
+    fields = { text: (item) => prop(item, 'text') },
+    getId = (item) => prop(item, 'id') as PropertyKey,
     startAt = () => 0,
     config,
-  } = {},
-) {
+  }: FindOptions<T> = {},
+): Find<T> {
   const query = ref('')
   const isOpen = ref(false)
   /** Position in the flat match list, -1 when there is nothing to point at. */
   const current = ref(-1)
 
-  /** The text of one field of one item, always a string. */
-  const fieldText = (item, field) => String(fields[field]?.(item) ?? '')
+  const fieldText = (item: T, field: string) => String(fields[field]?.(item) ?? '')
 
   const results = computed(() => {
-    /** @type {Match[]} */
-    const list = []
-    /** @type {Map<unknown, Record<string, Match[]>>} */
-    const byId = new Map()
+    const list: Match<T>[] = []
+    const byId = new Map<PropertyKey, Record<string, Match<T>[]>>()
     if (!isOpen.value || !query.value) return { list, byId }
 
     for (const item of toValue(items)) {
       const id = getId(item)
-      const byField = {}
+      const byField: Record<string, Match<T>[]> = {}
       for (const field of Object.keys(fields)) {
         const ranges = findRanges(fieldText(item, field), query.value)
         if (ranges.length === 0) continue
@@ -71,20 +59,18 @@ export function createFind(
     if (results.value === set) current.value = index
   })
 
-  const step = (delta) => {
+  const step = (delta: number) => {
     if (total.value) current.value = (current.value + delta + total.value) % total.value
   }
 
   return {
     config: mergeConfig(config),
-    fieldText,
     query,
     isOpen,
-    /** Every match in document order, each with its global index. */
     matches,
     total,
     current,
-    /** Matches inside one field of one message; the same empty array whenever there are none. */
+    fieldText,
     matchesFor: (id, field = 'text') => results.value.byId.get(id)?.[field] ?? NONE,
     open: () => (isOpen.value = true),
     close: () => (isOpen.value = false),

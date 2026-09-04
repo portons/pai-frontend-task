@@ -14,19 +14,22 @@
   </template>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { segment } from './match'
 import { useFind } from './useFind'
 import { vScrollIntoView } from './vScrollIntoView'
 
-const props = defineProps({
-  text: { type: String, required: true },
-  /** The message id this text belongs to, as seen by provideFind(). */
-  id: { required: true },
-  /** Which searchable field this text is, as named in provideFind's `fields`. */
-  field: { type: String, default: 'text' },
-})
+const props = withDefaults(
+  defineProps<{
+    text: string
+    /** The message id this text belongs to, as seen by provideFind(). */
+    id: PropertyKey
+    /** Which searchable field this text is, as named in provideFind's `fields`. */
+    field?: string
+  }>(),
+  { field: 'text' },
+)
 
 const { matchesFor, current, config } = useFind()
 const segments = computed(() => segment(props.text, matchesFor(props.id, props.field)))

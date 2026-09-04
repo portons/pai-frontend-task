@@ -48,19 +48,35 @@
   </div>
 </template>
 
-<script setup>
-import { computed, h, nextTick, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+<script setup lang="ts">
+import {
+  computed,
+  h,
+  nextTick,
+  onUnmounted,
+  ref,
+  useTemplateRef,
+  watch,
+  type CSSProperties,
+  type FunctionalComponent,
+} from 'vue'
 import { findMarks, scrollParent } from './dom'
 import { segment } from './match'
+import type { Match, Segment } from './types'
 import { useFind } from './useFind'
 
 /** px, must match the `w-3` track above. */
 const TRACK_WIDTH = 12
 
 const { matches, matchesFor, current, total, goTo, fieldText, config } = useFind()
-const root = useTemplateRef('root')
-const ticks = ref([])
-const frame = ref({})
+interface Tick {
+  index: number
+  pct: number
+}
+
+const root = useTemplateRef<HTMLElement>('root')
+const ticks = ref<Tick[]>([])
+const frame = ref<CSSProperties>({})
 const vars = {
   '--find-tick': config.colors.tick,
   '--find-tick-active': config.colors.activeTick,
@@ -78,8 +94,9 @@ async function measure() {
     ticks.value = []
     return
   }
-  const scroller = scrollParent(marks[0])
+  const scroller = scrollParent(marks[0]!)
   const host = root.value.offsetParent ?? root.value.parentElement
+  if (!host) return
   const area = scroller.getBoundingClientRect()
   const origin = host.getBoundingClientRect()
   frame.value = {
@@ -97,9 +114,9 @@ async function measure() {
 }
 watch(matches, measure)
 
-let observer = null
-let observed = null
-function observe(scroller) {
+let observer: ResizeObserver | null = null
+let observed: Element | null = null
+function observe(scroller: Element) {
   if (observed === scroller) return
   observer?.disconnect()
   observed = scroller
@@ -110,12 +127,13 @@ onUnmounted(() => observer?.disconnect())
 
 // Hovering a tick previews its message, anchored beside the tick and kept
 // inside the track near the top and bottom edges.
-const hovered = ref(null)
+const hovered = ref<Tick | null>(null)
 const preview = computed(() => {
-  const match = hovered.value && matches.value[hovered.value.index]
-  if (!match) return null
-  const { index, pct } = hovered.value
-  const marked = (field) =>
+  const tick = hovered.value
+  const match = tick && matches.value[tick.index]
+  if (!tick || !match) return null
+  const { index, pct } = tick
+  const marked = (field: string | null) =>
     field ? segment(fieldText(match.item, field), matchesFor(match.id, field)) : []
   return {
     index,
@@ -128,7 +146,10 @@ const preview = computed(() => {
 })
 
 /** Segments as text nodes and <mark>s, the active match emphasised. */
-const Marked = ({ segments, active }) =>
+const Marked: FunctionalComponent<{ segments: Segment<Match>[]; active: number }> = ({
+  segments,
+  active,
+}) =>
   segments.map((seg) =>
     seg.match
       ? h(

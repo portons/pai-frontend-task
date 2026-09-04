@@ -1,10 +1,12 @@
+import type { FindConfig, FindConfigOverrides } from './types'
+
 /**
  * Every tunable of the find module in one place. Override any subset per
  * use case; untouched keys keep their defaults:
  *
  *   provideFind(messages, { config: { colors: { activeMatch: '#f97316' } } })
  */
-export const defaultConfig = {
+export const defaultConfig: FindConfig = {
   colors: {
     /** Every match. amber-200: warm enough to read on grey and on indigo bubbles. */
     match: '#fde68a',
@@ -34,7 +36,6 @@ export const defaultConfig = {
     placeholder: 'Find in conversation',
     noResults: 'No results',
   },
-  /** Which fields (by the names given to provideFind) the tick-mark preview shows. */
   preview: {
     title: null,
     subtitle: null,
@@ -43,10 +44,10 @@ export const defaultConfig = {
 }
 
 /** Merge one level of sections, so a partial override keeps its siblings. */
-export function mergeConfig(overrides = {}) {
-  const merged = {}
-  for (const section of Object.keys(defaultConfig)) {
-    merged[section] = { ...defaultConfig[section], ...overrides[section] }
-  }
-  return merged
-}
+export const mergeConfig = (o: FindConfigOverrides = {}): FindConfig => ({
+  colors: { ...defaultConfig.colors, ...o.colors },
+  motion: { ...defaultConfig.motion, ...o.motion },
+  behavior: { ...defaultConfig.behavior, ...o.behavior },
+  text: { ...defaultConfig.text, ...o.text },
+  preview: { ...defaultConfig.preview, ...o.preview },
+})
