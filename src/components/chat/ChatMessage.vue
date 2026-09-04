@@ -25,7 +25,7 @@
       </p>
       <time
         class="pt-1 text-[11px]"
-        :class="item.incoming ? 'self-end text-slate-400' : 'self-start text-indigo-200'"
+        :class="item.incoming ? 'self-end text-slate-500' : 'self-start text-indigo-100'"
         :datetime="item.created.toISOString()"
       >
         <HighlightedText :text="formatDateTime(item.created)" :id="item.id" field="created" />
