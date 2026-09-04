@@ -10,7 +10,9 @@
         aria-label="Conversation"
         class="flex-grow overflow-y-auto bg-stone-100 rounded p-2 space-y-2"
       >
-        <template v-for="day in days" :key="day.key">
+        <!-- One section per day: a sticky header is scoped to its parent, so
+             the next day's header pushes the previous one out instead of stacking. -->
+        <section v-for="day in days" :key="day.key" :aria-label="day.label" class="space-y-2">
           <div class="sticky top-0 z-[5] flex justify-center py-1">
             <span
               class="rounded-full bg-white/90 px-3 py-0.5 text-xs text-gray-500 shadow-sm ring-1 ring-black/5 backdrop-blur"
@@ -18,7 +20,7 @@
             />
           </div>
           <ChatMessage v-for="item in day.items" :key="item.id" :item="item" />
-        </template>
+        </section>
       </div>
     </div>
   </div>
