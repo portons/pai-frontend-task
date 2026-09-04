@@ -31,27 +31,11 @@ import ChatHeader from './components/chat/ChatHeader.vue'
 import ChatMessage from './components/chat/ChatMessage.vue'
 import { FindBar, provideFind } from './components/search'
 import raw from './assets/msgs.json'
-import { formatDateTime, formatDay, parseCreated } from './lib/dates'
-import type { Message } from './types'
+import { formatDateTime } from './lib/dates'
+import { fromApi, groupByDay } from './lib/messages'
 
-const items = raw.map(
-  (m): Message => ({
-    id: m.id,
-    incoming: m.incoming,
-    from: m.from,
-    text: m.text,
-    created: parseCreated(m.created),
-  }),
-)
-
-/** Consecutive messages from the same calendar day, in order. */
-const days = items.reduce<{ key: string; label: string; items: Message[] }[]>((groups, item) => {
-  const key = item.created.toDateString()
-  const last = groups.at(-1)
-  if (last?.key === key) last.items.push(item)
-  else groups.push({ key, label: formatDay(item.created), items: [item] })
-  return groups
-}, [])
+const items = fromApi(raw)
+const days = groupByDay(items)
 
 provideFind(items, {
   fields: { from: (m) => m.from, text: (m) => m.text, created: (m) => formatDateTime(m.created) },
