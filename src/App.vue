@@ -5,7 +5,11 @@
     >
       <ChatHeader class="flex-shrink-0" />
       <FindBar />
-      <div class="flex-grow overflow-y-auto bg-stone-100 rounded p-2 space-y-2">
+      <div
+        role="log"
+        aria-label="Conversation"
+        class="flex-grow overflow-y-auto bg-stone-100 rounded p-2 space-y-2"
+      >
         <template v-for="day in days" :key="day.key">
           <div class="sticky top-0 z-[5] flex justify-center py-1">
             <span

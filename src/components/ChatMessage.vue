@@ -1,8 +1,9 @@
 <template>
-  <div class="flex gap-x-2" :class="{ 'flex-row-reverse': !item.incoming }">
+  <article class="flex gap-x-2" :class="{ 'flex-row-reverse': !item.incoming }">
     <div
       class="w-9 h-9 rounded-full flex items-center justify-center text-lg text-white flex-shrink-0"
       :class="item.incoming ? 'bg-green-600' : 'bg-blue-600'"
+      aria-hidden="true"
       v-text="initialOf(item.from)"
     />
     <div
@@ -27,7 +28,7 @@
         <HighlightedText :text="formatDateTime(item.created)" :id="item.id" field="created" />
       </time>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">
