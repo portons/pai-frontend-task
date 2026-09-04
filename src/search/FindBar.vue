@@ -65,11 +65,12 @@
 
 <script setup>
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
+import { selectText } from './dom'
 import FindTicks from './FindTicks.vue'
 import { useFind } from './useFind'
 import { useFindHotkeys } from './useFindHotkeys'
 
-const { query, isOpen, total, current, open, close, next, prev, config } = useFind()
+const { query, isOpen, matches, current, total, open, close, next, prev, config } = useFind()
 
 const vars = {
   '--find-bar-enter-ms': `${config.motion.barEnterMs}ms`,
@@ -87,6 +88,14 @@ const announcement = computed(() =>
       ? `${current.value + 1} of ${total.value}`
       : config.text.noResults,
 )
+
+/** Close, leaving the current match selected so the reader keeps their place. */
+function dismiss() {
+  const match = config.behavior.selectMatchOnClose && matches.value[current.value]
+  const host = match && document.querySelector('mark[aria-current]')?.parentElement
+  close()
+  if (host) nextTick(() => selectText(host, match.start, match.end))
+}
 
 /** Step through matches, or shake when there is nothing to step to. */
 function jump(step) {
@@ -110,7 +119,7 @@ const buttons = [
     run: () => jump(next),
     needsResults: true,
   },
-  { label: 'Close', hint: 'Esc', icon: 'm6 6 8 8M14 6l-8 8', run: close },
+  { label: 'Close', hint: 'Esc', icon: 'm6 6 8 8M14 6l-8 8', run: dismiss },
 ]
 
 async function focusInput() {
@@ -132,7 +141,7 @@ watch(isOpen, (opened) => {
 
 useFindHotkeys({
   onFind: () => (isOpen.value ? focusInput() : open()),
-  onClose: close,
+  onClose: dismiss,
   onNext: () => jump(next),
   onPrev: () => jump(prev),
 })

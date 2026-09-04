@@ -26,6 +26,10 @@ export const defaultConfig = {
     barEnterMs: 200,
     barLeaveMs: 150,
   },
+  behavior: {
+    /** Leave the current match selected when the bar closes, as Chrome does. */
+    selectMatchOnClose: true,
+  },
   text: {
     placeholder: 'Find in conversation',
     noResults: 'No results',

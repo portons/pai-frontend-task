@@ -11,3 +11,20 @@ export function scrollParent(el) {
 
 /** Every rendered match, in document order (HighlightedText tags each <mark>). */
 export const findMarks = () => document.querySelectorAll('[data-find-index]')
+
+/**
+ * Select a slice of the text inside `el`, the way Chrome leaves the last
+ * match selected when its find bar closes. Skips Vue's empty anchor nodes.
+ */
+export function selectText(el, start, end) {
+  const node = Array.from(el.childNodes).find(
+    (n) => n.nodeType === Node.TEXT_NODE && n.length >= end,
+  )
+  if (!node) return
+  const range = document.createRange()
+  range.setStart(node, start)
+  range.setEnd(node, end)
+  const selection = getSelection()
+  selection.removeAllRanges()
+  selection.addRange(range)
+}
