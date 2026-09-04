@@ -62,17 +62,13 @@ import {
 } from 'vue';
 import { findMarks, scrollParent } from '../lib/dom';
 import { segment } from '../lib/match';
-import type { Match, Segment } from '../types';
+import type { MarkedProps, Tick } from '../types';
 import { useFind } from '../composables/useFind';
 
 /** px, must match the `w-3` track above. */
 const TRACK_WIDTH = 12;
 
 const { matches, matchesFor, current, total, goTo, fieldText, config } = useFind();
-interface Tick {
-  index: number;
-  pct: number;
-}
 
 const root = useTemplateRef<HTMLElement>('root');
 const ticks = ref<Tick[]>([]);
@@ -147,10 +143,7 @@ const preview = computed(() => {
 });
 
 /** Segments as text nodes and <mark>s, the active match emphasised. */
-const Marked: FunctionalComponent<{ segments: Segment<Match>[]; active: number }> = ({
-  segments,
-  active,
-}) =>
+const Marked: FunctionalComponent<MarkedProps> = ({ segments, active }) =>
   segments.map((seg) =>
     seg.match
       ? h(

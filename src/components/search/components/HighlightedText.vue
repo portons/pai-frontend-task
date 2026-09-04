@@ -16,23 +16,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { DEFAULT_FIELD } from '../config';
 import { segment } from '../lib/match';
 import { useFind } from '../composables/useFind';
 import { vScrollIntoView } from '../directives/vScrollIntoView';
+import type { HighlightedTextProps } from '../types';
 
-const props = withDefaults(
-  defineProps<{
-    text: string;
-    /** The message id this text belongs to, as seen by provideFind(). */
-    id: PropertyKey;
-    /** Which searchable field this text is, as named in provideFind's `fields`. */
-    field?: string;
-  }>(),
-  { field: 'text' },
-);
+const { text, id, field = DEFAULT_FIELD } = defineProps<HighlightedTextProps>();
 
 const { matchesFor, current, config } = useFind();
-const segments = computed(() => segment(props.text, matchesFor(props.id, props.field)));
+const segments = computed(() => segment(text, matchesFor(id, field)));
 
 const vars = {
   '--find-match': config.colors.match,

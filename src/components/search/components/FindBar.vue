@@ -69,6 +69,7 @@ import { selectText } from '../lib/dom';
 import FindTicks from './FindTicks.vue';
 import { useFind } from '../composables/useFind';
 import { useFindHotkeys } from '../composables/useFindHotkeys';
+import type { FindBarButton } from '../types';
 
 const { query, isOpen, matches, current, total, open, close, next, prev, config } = useFind();
 
@@ -104,7 +105,7 @@ function jump(step: () => void) {
   else shaking.value = true;
 }
 
-const buttons = [
+const buttons: FindBarButton[] = [
   {
     label: 'Previous match',
     hint: 'Shift+Enter',

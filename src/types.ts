@@ -25,3 +25,8 @@ export interface DayGroup {
   label: string;
   items: Message[];
 }
+
+/** Props of <ChatMessage>. */
+export interface ChatMessageProps {
+  item: Message;
+}

@@ -1,17 +1,11 @@
 import { onMounted, onUnmounted } from 'vue';
-
-interface Handlers {
-  onFind(): void;
-  onClose(): void;
-  onNext(): void;
-  onPrev(): void;
-}
+import type { FindHotkeyHandlers } from '../types';
 
 /**
  * Browser find shortcuts: ⌘F / Ctrl+F opens (taking over the native find),
  * ⌘G / Ctrl+G steps forward and with Shift backward, Escape closes.
  */
-export function useFindHotkeys(on: Handlers) {
+export function useFindHotkeys(on: FindHotkeyHandlers) {
   const onKeydown = (e: KeyboardEvent) => {
     const key = e.key.toLowerCase();
     if ((e.metaKey || e.ctrlKey) && (key === 'f' || key === 'g')) {

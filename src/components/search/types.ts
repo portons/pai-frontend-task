@@ -54,6 +54,15 @@ export interface FindConfig {
   };
 }
 
+/** Matches of one message, keyed by the field they were found in. */
+export type MatchesByField<T = unknown> = Record<string, Match<T>[]>;
+
+/** The outcome of one search: every match in order, and a per-message lookup. */
+export interface FindResults<T = unknown> {
+  matches: Match<T>[];
+  byId: Map<PropertyKey, MatchesByField<T>>;
+}
+
 /** Any subset of the config; untouched keys keep their defaults. */
 export type FindConfigOverrides = { [S in keyof FindConfig]?: Partial<FindConfig[S]> };
 
@@ -88,4 +97,45 @@ export interface Find<T = unknown> {
   next(): void;
   prev(): void;
   goTo(index: number): void;
+}
+
+/** Props of <HighlightedText>. */
+export interface HighlightedTextProps {
+  text: string;
+  /** The message id this text belongs to, as seen by provideFind(). */
+  id: PropertyKey;
+  /** Which searchable field this text is, as named in provideFind's `fields`. */
+  field?: string;
+}
+
+/** What the find bar does on each browser shortcut. */
+export interface FindHotkeyHandlers {
+  onFind(): void;
+  onClose(): void;
+  onNext(): void;
+  onPrev(): void;
+}
+
+/** One of the bar's icon buttons. */
+export interface FindBarButton {
+  label: string;
+  /** Keyboard equivalent, shown in the tooltip. */
+  hint: string;
+  /** SVG path data. */
+  icon: string;
+  run(): void;
+  needsResults?: boolean;
+}
+
+/** One scrollbar tick: which match, and how far down the scroll height it sits. */
+export interface Tick {
+  index: number;
+  pct: number;
+}
+
+/** Props of the preview card's marked-text renderer. */
+export interface MarkedProps {
+  segments: Segment<Match>[];
+  /** Global index of the match to emphasise. */
+  active: number;
 }

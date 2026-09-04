@@ -35,10 +35,10 @@
 </template>
 
 <script setup lang="ts">
-import { formatDateTime } from '../../lib/dates';
-import { initialOf } from '../../lib/initial';
+import { formatDateTime } from '@/lib/dates.ts';
+import { initialOf } from '@/lib/initial.ts';
 import { HighlightedText } from '../search';
-import type { Message } from '../../types';
+import type { ChatMessageProps } from '@/types.ts';
 
-defineProps<{ item: Message }>();
+defineProps<ChatMessageProps>();
 </script>

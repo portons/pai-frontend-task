@@ -44,6 +44,9 @@ export const defaultConfig: FindConfig = {
   },
 };
 
+/** The field searched and highlighted when none is named. */
+export const DEFAULT_FIELD = 'text';
+
 /** Read a property off an item whose shape the module does not know. */
 const prop = (item: object, key: string): unknown => (item as Record<string, unknown>)[key];
 
@@ -52,7 +55,7 @@ const prop = (item: object, key: string): unknown => (item as Record<string, unk
  * field, identify items by `id`, start from the first match.
  */
 export const defaultOptions: Required<Omit<FindOptions<object>, 'config'>> = {
-  fields: { text: (item) => prop(item, 'text') },
+  fields: { [DEFAULT_FIELD]: (item) => prop(item, DEFAULT_FIELD) },
   getId: (item) => prop(item, 'id') as PropertyKey,
   startAt: () => 0,
 };
