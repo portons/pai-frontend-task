@@ -2,6 +2,11 @@
 
 A Vue 3 and TypeScript chat interface with browser-style search.
 
+## Demo
+
+- [Desktop walkthrough (MP4, 8 seconds)](docs/media/search-demo.mp4) — live search, navigation, match preview, tick jump, no-results state, and selection on close
+- [Mobile walkthrough (MP4, 5 seconds)](docs/media/search-mobile-demo.mp4) — responsive search and match navigation
+
 ## Setup
 
 ```sh
@@ -43,3 +48,21 @@ npm run build
 - `src/lib`: message and date helpers
 
 Tests are colocated with the search modules they cover.
+
+## Screenshots
+
+| Conversation                                         | Search results                                               |
+| ---------------------------------------------------- | ------------------------------------------------------------ |
+| ![Desktop conversation](docs/media/chat-desktop.png) | ![Highlighted search results](docs/media/search-results.png) |
+
+| Match preview                                             | No results                                            |
+| --------------------------------------------------------- | ----------------------------------------------------- |
+| ![Scrollbar match preview](docs/media/search-preview.png) | ![No-results state](docs/media/search-no-results.png) |
+
+| Selection on close                                                                     | Mobile layout                                      |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| ![Current match selected after closing search](docs/media/search-closed-selection.png) | ![Mobile conversation](docs/media/chat-mobile.png) |
+
+| Mobile search                                             |
+| --------------------------------------------------------- |
+| ![Responsive mobile search](docs/media/search-mobile.png) |
