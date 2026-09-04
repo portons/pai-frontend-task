@@ -81,6 +81,7 @@ const vars = {
   '--find-tick': config.colors.tick,
   '--find-tick-active': config.colors.activeTick,
   '--find-match': config.colors.match,
+  '--find-match-text': config.colors.matchText,
   '--find-active': config.colors.activeMatch,
   '--find-active-text': config.colors.activeMatchText,
 }
@@ -221,13 +222,14 @@ Marked.props = ['segments', 'active']
   top: calc(100% - 12px);
 }
 
-.find-pop-mark {
+/* :deep — the marks come from the Marked functional component, outside this scope. */
+.find-pop :deep(.find-pop-mark) {
   border-radius: 3px;
   padding: 0 2px;
-  color: inherit;
+  color: var(--find-match-text);
   background: var(--find-match);
 }
-.find-pop-mark-active {
+.find-pop :deep(.find-pop-mark-active) {
   background: var(--find-active);
   color: var(--find-active-text);
 }
