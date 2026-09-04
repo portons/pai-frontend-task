@@ -16,13 +16,17 @@ export function provideFind<T extends object>(
   options?: FindOptions<T>,
 ): Find<T> {
   const find = createFind(items, { startAt: nearestVisibleMatch, ...options });
+
   provide(KEY, find);
+
   return find;
 }
 
 /** The find state provided by the nearest provideFind() ancestor. */
 export function useFind(): Find {
   const find = inject(KEY, null);
+
   if (!find) throw new Error('useFind() called without provideFind() in an ancestor component');
+
   return find;
 }

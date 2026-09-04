@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { initialOf } from '../../lib/initial';
+import { initialOf } from '@/lib/initial.ts';
 
 const info = {
   name: 'John Doe',
