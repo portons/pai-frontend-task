@@ -51,7 +51,8 @@ export function createFind(
     return { list, byId }
   })
 
-  const total = computed(() => results.value.list.length)
+  const matches = computed(() => results.value.list)
+  const total = computed(() => matches.value.length)
 
   // Any new result set (typing, reopening, items changing) gets a fresh
   // pointer, even when the count happens to stay the same.
@@ -70,6 +71,8 @@ export function createFind(
     config: mergeConfig(config),
     query,
     isOpen,
+    /** Every match in document order, each with its global index. */
+    matches,
     total,
     current,
     /** Matches inside one message; the same empty array whenever there are none. */
@@ -78,5 +81,8 @@ export function createFind(
     close: () => (isOpen.value = false),
     next: () => step(1),
     prev: () => step(-1),
+    goTo: (index) => {
+      if (index >= 0 && index < total.value) current.value = index
+    },
   }
 }

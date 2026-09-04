@@ -1,21 +1,14 @@
 import { nextTick } from 'vue'
-
-const isScrollable = (el) => /auto|scroll/.test(getComputedStyle(el).overflowY)
-
-function scrollParent(el) {
-  let parent = el.parentElement
-  while (parent && !isScrollable(parent)) parent = parent.parentElement
-  return parent ?? document.documentElement
-}
+import { findMarks, scrollParent } from './dom'
 
 /**
  * Chrome's rule for where a search starts: the first match at or below the
  * top of the viewport, so a new query never yanks the reader away from where
- * they were. Reads the <mark> elements rendered by HighlightedText.
+ * they were.
  */
 export async function nearestVisibleMatch() {
   await nextTick()
-  const marks = document.querySelectorAll('[data-find-index]')
+  const marks = findMarks()
   if (marks.length === 0) return 0
   const viewportTop = scrollParent(marks[0]).getBoundingClientRect().top
   for (const mark of marks) {
