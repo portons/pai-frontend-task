@@ -1,8 +1,5 @@
-/** DOM helpers shared by the parts of the module that must look at layout. */
-
 const isScrollable = (el: Element) => /auto|scroll/.test(getComputedStyle(el).overflowY);
 
-/** The nearest scrolling ancestor, falling back to the document. */
 export function scrollParent(el: Element): Element {
   let parent = el.parentElement;
 
@@ -11,13 +8,9 @@ export function scrollParent(el: Element): Element {
   return parent ?? document.documentElement;
 }
 
-/** Every rendered match, in document order (HighlightedText tags each <mark>). */
-export const findMarks = () => document.querySelectorAll<HTMLElement>('[data-find-index]');
+export const findMarks = (root: ParentNode | null = null) =>
+  (root ?? document).querySelectorAll<HTMLElement>('[data-find-index]');
 
-/**
- * Select a slice of the text inside `el`, the way Chrome leaves the last
- * match selected when its find bar closes. Skips Vue's empty anchor nodes.
- */
 export function selectText(el: Element, start: number, end: number) {
   const node = Array.from(el.childNodes).find(
     (node): node is Text => node.nodeType === Node.TEXT_NODE && (node as Text).length >= end,

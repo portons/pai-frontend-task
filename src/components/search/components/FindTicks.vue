@@ -55,6 +55,7 @@ import {
   nextTick,
   onUnmounted,
   ref,
+  toValue,
   useTemplateRef,
   watch,
   type CSSProperties,
@@ -64,12 +65,12 @@ import { markStyles } from '../config';
 import { findMarks, scrollParent } from '../lib/dom';
 import { segment } from '../lib/match';
 import type { MarkedProps, Tick } from '../types';
-import { useFind } from '../composables/useFind';
+import { useFind, useFindRoot } from '../composables/useFind';
 
-/** px, must match the `w-3` track above. */
 const TRACK_WIDTH = 12;
 
 const { matches, matchesFor, current, total, goTo, fieldText, config } = useFind();
+const searchRoot = useFindRoot();
 
 const root = useTemplateRef<HTMLElement>('root');
 const ticks = ref<Tick[]>([]);
@@ -80,11 +81,9 @@ const vars = {
 };
 const style = markStyles(config);
 
-// Chrome's scrollbar markers: the track covers the list's scroll area and
-// each tick sits where its match lives in the full scroll height.
 async function measure() {
   await nextTick();
-  const marks = findMarks();
+  const marks = findMarks(toValue(searchRoot));
   if (marks.length === 0 || !root.value) {
     ticks.value = [];
     return;
@@ -120,8 +119,6 @@ function observe(scroller: Element) {
 }
 onUnmounted(() => observer?.disconnect());
 
-// Hovering a tick previews its message, anchored beside the tick and kept
-// inside the track near the top and bottom edges.
 const hovered = ref<Tick | null>(null);
 const preview = computed(() => {
   const tick = hovered.value;
@@ -140,7 +137,6 @@ const preview = computed(() => {
   };
 });
 
-/** Segments as text nodes and <mark>s, the active match emphasised. */
 const Marked: FunctionalComponent<MarkedProps> = ({ segments, active }) =>
   segments.map((seg) =>
     seg.match

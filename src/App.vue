@@ -6,12 +6,11 @@
       <ChatHeader />
       <FindBar />
       <div
+        ref="conversation"
         role="log"
         aria-label="Conversation"
         class="flex-grow space-y-4 overflow-y-auto bg-slate-50 px-4 py-3"
       >
-        <!-- One section per day: a sticky header is scoped to its parent, so
-             the next day's header pushes the previous one out instead of stacking. -->
         <section v-for="day in days" :key="day.key" :aria-label="day.label" class="space-y-3">
           <div class="sticky top-0 z-[5] flex justify-center py-1">
             <span
@@ -27,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import { useTemplateRef } from 'vue';
 import ChatHeader from './components/chat/ChatHeader.vue';
 import ChatMessage from './components/chat/ChatMessage.vue';
 import { FindBar, provideFind } from './components/search';
@@ -36,8 +36,10 @@ import { fromApi, groupByDay } from './lib/messages';
 
 const items = fromApi(raw);
 const days = groupByDay(items);
+const conversation = useTemplateRef<HTMLElement>('conversation');
 
 provideFind(items, {
+  root: conversation,
   fields: {
     from: (message) => message.from,
     text: (message) => message.text,

@@ -3,7 +3,7 @@
     <div
       v-if="isOpen"
       role="search"
-      class="absolute top-3 right-3 z-10 flex items-center gap-1 rounded-xl bg-white/85 px-2 py-1.5 shadow-lg ring-1 ring-black/10 backdrop-blur-md"
+      class="absolute top-3 right-3 left-3 z-10 flex min-w-0 items-center gap-1 rounded-xl bg-white/85 px-2 py-1.5 shadow-lg ring-1 ring-black/10 backdrop-blur-md sm:left-auto"
       :class="{ 'find-shake': shaking }"
       :style="vars"
       @animationend="shaking = false"
@@ -24,19 +24,19 @@
         type="text"
         :placeholder="config.text.placeholder"
         :aria-label="config.text.placeholder"
-        class="w-48 bg-transparent px-1 text-sm text-gray-900 outline-none placeholder:text-gray-400"
+        class="min-w-0 flex-1 bg-transparent px-1 text-sm text-gray-900 outline-none placeholder:text-gray-400 sm:w-48 sm:flex-none"
         @keydown.enter.exact.prevent="jump(next)"
         @keydown.shift.enter.prevent="jump(prev)"
       />
 
       <span
-        class="w-16 text-right text-xs tabular-nums transition-colors"
+        class="w-12 shrink-0 text-right text-xs tabular-nums transition-colors sm:w-16"
         :class="query && !total ? 'text-red-500' : 'text-gray-500'"
         v-text="query ? `${current + 1}/${total}` : ''"
       />
       <span class="sr-only" aria-live="polite" v-text="announcement" />
 
-      <span class="mx-1 h-5 w-px bg-gray-200" />
+      <span class="mx-1 h-5 w-px shrink-0 bg-gray-200" />
 
       <button
         v-for="button in buttons"
@@ -64,14 +64,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { computed, nextTick, ref, toValue, useTemplateRef, watch } from 'vue';
 import { selectText } from '../lib/dom';
 import FindTicks from './FindTicks.vue';
-import { useFind } from '../composables/useFind';
+import { useFind, useFindRoot } from '../composables/useFind';
 import { useFindHotkeys } from '../composables/useFindHotkeys';
 import type { FindBarButton } from '../types';
 
 const { query, isOpen, matches, current, total, open, close, next, prev, config } = useFind();
+const searchRoot = useFindRoot();
 
 const vars = {
   '--find-bar-enter-ms': `${config.motion.barEnterMs}ms`,
@@ -90,19 +91,19 @@ const announcement = computed(() =>
       : config.text.noResults,
 );
 
-/** Close, leaving the current match selected so the reader keeps their place. */
 function dismiss() {
   const match = config.behavior.selectMatchOnClose && matches.value[current.value];
-  const host = match && document.querySelector('mark[aria-current]')?.parentElement;
+  const scope = toValue(searchRoot) ?? document;
+  const host = match && scope.querySelector('mark[aria-current]')?.parentElement;
   close();
   if (host) nextTick(() => selectText(host, match.start, match.end));
 }
 
-/** Step through matches, or shake when there is nothing to step to. */
-function jump(step: () => void) {
-  if (!isOpen.value) return;
+function jump(step: () => void): boolean {
+  if (!isOpen.value) return false;
   if (total.value) step();
   else shaking.value = true;
+  return true;
 }
 
 const buttons: FindBarButton[] = [
@@ -129,7 +130,6 @@ async function focusInput() {
   input.value?.select();
 }
 
-// Focus moves into the bar on open and back to where it was on close.
 let previouslyFocused: Element | null = null;
 watch(isOpen, (opened) => {
   if (opened) {

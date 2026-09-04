@@ -1,15 +1,12 @@
-import { nextTick } from 'vue';
+import { nextTick, toValue, type MaybeRefOrGetter } from 'vue';
 import { findMarks, scrollParent } from './dom';
 
-/**
- * Chrome's rule for where a search starts: the first match at or below the
- * top of the viewport, so a new query never yanks the reader away from where
- * they were.
- */
-export async function nearestVisibleMatch(): Promise<number> {
+export async function nearestVisibleMatch(
+  root: MaybeRefOrGetter<HTMLElement | null> = null,
+): Promise<number> {
   await nextTick();
 
-  const marks = findMarks();
+  const marks = findMarks(toValue(root));
   const first = marks[0];
 
   if (!first) return 0;
