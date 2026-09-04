@@ -30,7 +30,7 @@
       />
 
       <span
-        class="min-w-10 text-right text-xs tabular-nums transition-colors"
+        class="w-16 text-right text-xs tabular-nums transition-colors"
         :class="query && !total ? 'text-red-500' : 'text-gray-500'"
         v-text="query ? `${current + 1}/${total}` : ''"
       />
