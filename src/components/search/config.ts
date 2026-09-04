@@ -10,7 +10,8 @@ export const defaultConfig: FindConfig = {
   colors: {
     /** Every match. amber-200: warm enough to read on grey and on indigo bubbles. */
     match: '#fde68a',
-    matchText: 'inherit',
+    /** Dark on amber regardless of the surrounding text colour, so marks read on dark bubbles too. */
+    matchText: '#1c1917',
     /** The current match: one step up the same ramp (amber-400), dark text for contrast. */
     activeMatch: '#fbbf24',
     activeMatchText: '#1c1917',

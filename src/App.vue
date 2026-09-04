@@ -1,21 +1,21 @@
 <template>
-  <div class="bg-zinc-500 w-screen h-screen p-5">
+  <div class="h-screen w-screen bg-slate-200 p-4 antialiased sm:p-6">
     <div
-      class="relative bg-white border border-gray-300 rounded-md p-3 max-w-[1200px] m-auto h-full !font-sans flex flex-col gap-y-2 overflow-hidden"
+      class="relative mx-auto flex h-full max-w-[1200px] flex-col overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-900/10"
     >
-      <ChatHeader class="flex-shrink-0" />
+      <ChatHeader />
       <FindBar />
       <div
         role="log"
         aria-label="Conversation"
-        class="flex-grow overflow-y-auto bg-stone-100 rounded p-2 space-y-2"
+        class="flex-grow space-y-4 overflow-y-auto bg-slate-50 px-4 py-3"
       >
         <!-- One section per day: a sticky header is scoped to its parent, so
              the next day's header pushes the previous one out instead of stacking. -->
-        <section v-for="day in days" :key="day.key" :aria-label="day.label" class="space-y-2">
+        <section v-for="day in days" :key="day.key" :aria-label="day.label" class="space-y-3">
           <div class="sticky top-0 z-[5] flex justify-center py-1">
             <span
-              class="rounded-full bg-white/90 px-3 py-0.5 text-xs text-gray-500 shadow-sm ring-1 ring-black/5 backdrop-blur"
+              class="rounded-full bg-white px-3 py-1 text-[11px] font-medium tracking-wide text-slate-500 uppercase shadow-sm ring-1 ring-slate-200"
               v-text="day.label"
             />
           </div>
