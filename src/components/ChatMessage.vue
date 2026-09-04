@@ -29,8 +29,9 @@
       </div>
       <p
         class="BaseMessage-content text-sm font-normal whitespace-break-spaces text-text break-words !break-all"
-        v-text="item.text"
-      />
+      >
+        <HighlightedText :text="item.text" :id="item.id" />
+      </p>
 
       <div
         :class="{ 'justify-end': item.incoming }"
@@ -47,5 +48,7 @@
 </template>
 
 <script setup>
+import { HighlightedText } from '../search'
+
 defineProps(['item'])
 </script>
