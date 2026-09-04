@@ -1,22 +1,13 @@
 import type { Range, Segment } from '../types';
 
-/** Pure text matching. No Vue, no DOM. */
-
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const combiningMark = /\p{M}/u;
 
-/**
- * Case- and accent-insensitive form of a string: "Café" → "cafe", "ß" → "ss".
- * The upper-then-lower round trip is full case folding; toLowerCase() alone
- * leaves "ß" and "ς" unmatched against "ss" and "σ".
- */
+// The upper/lower round trip also folds characters such as ß and ς.
 const fold = (text: string) =>
   text.normalize('NFD').replace(/\p{M}/gu, '').toUpperCase().toLowerCase();
 
-/**
- * Folds `text` one character at a time, remembering for every folded code
- * unit which original character produced it. Folding can change the length
- * of a string, so offsets found in the folded text must be mapped back.
- */
+// Track original offsets because case folding can change string length.
 function foldWithOffsets(text: string) {
   let folded = '';
   const starts: number[] = [];
@@ -34,10 +25,6 @@ function foldWithOffsets(text: string) {
   return { folded, starts, ends };
 }
 
-/**
- * Every occurrence of `query` in `text`, ignoring case and accents.
- * Sorted, non-overlapping, in original-string offsets.
- */
 export function findRanges(text: string, query: string): Range[] {
   const needle = foldWithOffsets(query).folded;
 
@@ -45,18 +32,25 @@ export function findRanges(text: string, query: string): Range[] {
 
   const { folded, starts, ends } = foldWithOffsets(text);
   const pattern = new RegExp(escapeRegExp(needle), 'g');
+  const ranges: Range[] = [];
 
-  return Array.from(folded.matchAll(pattern), (found) => ({
-    start: starts[found.index]!,
-    end: ends[found.index + found[0].length - 1]!,
-  }));
+  for (const found of folded.matchAll(pattern)) {
+    const start = starts[found.index]!;
+    let end = ends[found.index + found[0].length - 1]!;
+
+    for (const character of text.slice(end)) {
+      if (!combiningMark.test(character)) break;
+      end += character.length;
+    }
+
+    if (!ranges.length || start >= ranges[ranges.length - 1]!.end) {
+      ranges.push({ start, end });
+    }
+  }
+
+  return ranges;
 }
 
-/**
- * Split `text` into plain and matched pieces, so a template can render
- * text nodes and <mark> elements without ever touching innerHTML.
- * `ranges` must be sorted and non-overlapping.
- */
 export function segment<M extends Range>(text: string, ranges: readonly M[]): Segment<M>[] {
   const out: Segment<M>[] = [];
   let pos = 0;
