@@ -1,6 +1,5 @@
 const CREATED = /^(\d{2})\/(\d{2})\/(\d{2}) (\d{1,2}):(\d{2}) (AM|PM)$/;
 
-/** Parse the API's "MM/DD/YY hh:mm AM" timestamps as local time. */
 export function parseCreated(created: string): Date {
   const parts = CREATED.exec(created);
   if (!parts) throw new Error(`Unrecognised timestamp: ${created}`);
@@ -12,8 +11,6 @@ export function parseCreated(created: string): Date {
 const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 const day = new Intl.DateTimeFormat(undefined, { dateStyle: 'full' });
 
-/** "Jan 1, 2024, 12:00 AM" in the reader's locale. */
 export const formatDateTime = (date: Date) => dateTime.format(date);
 
-/** "Monday, January 1, 2024" in the reader's locale. */
 export const formatDay = (date: Date) => day.format(date);

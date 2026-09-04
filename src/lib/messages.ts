@@ -1,7 +1,6 @@
 import type { ApiMessage, DayGroup, Message } from '../types';
 import { formatDay, parseCreated } from './dates';
 
-/** API rows to app messages: pick the fields the app uses and parse the timestamp. */
 export function fromApi(rows: ApiMessage[]): Message[] {
   return rows.map((row) => ({
     id: row.id,
@@ -12,7 +11,6 @@ export function fromApi(rows: ApiMessage[]): Message[] {
   }));
 }
 
-/** Split an ordered list of messages into runs of the same calendar day. */
 export function groupByDay(messages: Message[]): DayGroup[] {
   const days: DayGroup[] = [];
   for (const message of messages) {
