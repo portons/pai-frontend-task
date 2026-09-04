@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
+    "test": "vitest run",
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
@@ -28,6 +29,7 @@
     "prettier": "^3.4.2",
     "typescript": "^6.0.3",
     "vite": "^6.0.11",
+    "vitest": "^3.2.4",
     "vue-tsc": "^3.3.11"
   }
 }
