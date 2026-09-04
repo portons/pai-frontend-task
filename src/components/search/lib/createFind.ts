@@ -1,7 +1,7 @@
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue';
-import { defaultOptions, mergeConfig } from '../config';
+import { DEFAULT_FIELD, defaultOptions, mergeConfig } from '../config';
 import { findRanges } from './match';
-import type { Find, FindOptions, Match } from '../types';
+import type { Find, FindOptions, FindResults, Match, MatchesByField } from '../types';
 
 const NONE: readonly never[] = Object.freeze([]);
 
@@ -21,35 +21,46 @@ export function createFind<T extends object>(
 
   const fieldText = (item: T, field: string) => String(fields[field]?.(item) ?? '');
 
-  const results = computed(() => {
-    const list: Match<T>[] = [];
-    const byId = new Map<PropertyKey, Record<string, Match<T>[]>>();
-    if (!isOpen.value || !query.value) return { list, byId };
+  /** Where `query` occurs in one item, field by field in on-screen order. Not yet numbered. */
+  function matchesIn(item: T, query: string): Omit<Match<T>, 'index'>[] {
+    const id = getId(item);
+    return Object.keys(fields).flatMap((field) =>
+      findRanges(fieldText(item, field), query).map((range) => ({ ...range, id, item, field })),
+    );
+  }
 
-    for (const item of toValue(items)) {
-      const id = getId(item);
-      const byField: Record<string, Match<T>[]> = {};
-      for (const field of Object.keys(fields)) {
-        const ranges = findRanges(fieldText(item, field), query.value);
-        if (ranges.length === 0) continue;
-        byField[field] = ranges.map((r, i) => ({ ...r, id, item, field, index: list.length + i }));
-        list.push(...byField[field]);
-      }
-      if (Object.keys(byField).length) byId.set(id, byField);
+  /** Every match across all items, numbered in document order, plus the per-message lookup. */
+  function search(list: T[], query: string): FindResults<T> {
+    const matches = list
+      .flatMap((item) => matchesIn(item, query))
+      .map((match, index) => ({ ...match, index }));
+
+    const byId = new Map<PropertyKey, MatchesByField<T>>();
+    for (const match of matches) {
+      const byField = byId.get(match.id) ?? {};
+      const inField = byField[match.field] ?? [];
+      inField.push(match);
+      byField[match.field] = inField;
+      byId.set(match.id, byField);
     }
-    return { list, byId };
-  });
+    return { matches, byId };
+  }
 
-  const matches = computed(() => results.value.list);
+  const nothing: FindResults<T> = { matches: [], byId: new Map() };
+  const results = computed(() =>
+    isOpen.value && query.value ? search(toValue(items), query.value) : nothing,
+  );
+
+  const matches = computed(() => results.value.matches);
   const total = computed(() => matches.value.length);
 
   // Any new result set (typing, reopening, items changing) gets a fresh
   // pointer, even when the count happens to stay the same.
-  watch(results, async (set) => {
+  watch(results, async (found) => {
     current.value = -1;
-    if (set.list.length === 0) return;
-    const index = await startAt(set.list);
-    if (results.value === set) current.value = index;
+    if (found.matches.length === 0) return;
+    const index = await startAt(found.matches);
+    if (results.value === found) current.value = index;
   });
 
   const step = (delta: number) => {
@@ -64,7 +75,7 @@ export function createFind<T extends object>(
     total,
     current,
     fieldText,
-    matchesFor: (id, field = 'text') => results.value.byId.get(id)?.[field] ?? NONE,
+    matchesFor: (id, field = DEFAULT_FIELD) => results.value.byId.get(id)?.[field] ?? NONE,
     open: () => (isOpen.value = true),
     close: () => (isOpen.value = false),
     next: () => step(1),
