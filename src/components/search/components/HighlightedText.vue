@@ -16,9 +16,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { segment } from './match'
-import { useFind } from './useFind'
-import { vScrollIntoView } from './vScrollIntoView'
+import { segment } from '../lib/match'
+import { useFind } from '../composables/useFind'
+import { vScrollIntoView } from '../directives/vScrollIntoView'
 
 const props = withDefaults(
   defineProps<{

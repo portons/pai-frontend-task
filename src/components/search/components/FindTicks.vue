@@ -60,10 +60,10 @@ import {
   type CSSProperties,
   type FunctionalComponent,
 } from 'vue'
-import { findMarks, scrollParent } from './dom'
-import { segment } from './match'
-import type { Match, Segment } from './types'
-import { useFind } from './useFind'
+import { findMarks, scrollParent } from '../lib/dom'
+import { segment } from '../lib/match'
+import type { Match, Segment } from '../types'
+import { useFind } from '../composables/useFind'
 
 /** px, must match the `w-3` track above. */
 const TRACK_WIDTH = 12

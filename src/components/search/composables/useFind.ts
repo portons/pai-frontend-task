@@ -1,7 +1,7 @@
 import { inject, provide, type InjectionKey, type MaybeRefOrGetter } from 'vue'
-import { createFind } from './createFind'
-import { nearestVisibleMatch } from './nearestVisibleMatch'
-import type { Find, FindOptions } from './types'
+import { createFind } from '../lib/createFind'
+import { nearestVisibleMatch } from '../lib/nearestVisibleMatch'
+import type { Find, FindOptions } from '../types'
 
 // A registered symbol survives module hot-reloads, so editing this file in
 // dev does not orphan already-mounted consumers.

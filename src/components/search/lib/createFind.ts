@@ -1,7 +1,7 @@
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
-import { mergeConfig } from './config'
+import { mergeConfig } from '../config'
 import { findRanges } from './match'
-import type { Find, FindOptions, Match } from './types'
+import type { Find, FindOptions, Match } from '../types'
 
 const NONE: readonly never[] = Object.freeze([])
 

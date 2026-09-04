@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import ChatHeader from './components/ChatHeader.vue'
 import ChatMessage from './components/ChatMessage.vue'
-import { FindBar, provideFind } from './search'
+import { FindBar, provideFind } from './components/search'
 import raw from './assets/msgs.json'
 import { formatDateTime, formatDay, parseCreated } from './lib/dates'
 import type { Message } from './types'

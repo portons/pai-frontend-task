@@ -65,10 +65,10 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
-import { selectText } from './dom'
+import { selectText } from '../lib/dom'
 import FindTicks from './FindTicks.vue'
-import { useFind } from './useFind'
-import { useFindHotkeys } from './useFindHotkeys'
+import { useFind } from '../composables/useFind'
+import { useFindHotkeys } from '../composables/useFindHotkeys'
 
 const { query, isOpen, matches, current, total, open, close, next, prev, config } = useFind()
 

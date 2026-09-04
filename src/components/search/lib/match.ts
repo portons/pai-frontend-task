@@ -1,4 +1,4 @@
-import type { Range, Segment } from './types'
+import type { Range, Segment } from '../types'
 
 /** Pure text matching. No Vue, no DOM. */
 
