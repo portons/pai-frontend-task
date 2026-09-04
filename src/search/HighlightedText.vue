@@ -24,10 +24,12 @@ const props = defineProps({
   text: { type: String, required: true },
   /** The message id this text belongs to, as seen by provideFind(). */
   id: { required: true },
+  /** Which searchable field this text is, as named in provideFind's `fields`. */
+  field: { type: String, default: 'text' },
 })
 
 const { matchesFor, current, config } = useFind()
-const segments = computed(() => segment(props.text, matchesFor(props.id)))
+const segments = computed(() => segment(props.text, matchesFor(props.id, props.field)))
 
 const vars = {
   '--find-match': config.colors.match,

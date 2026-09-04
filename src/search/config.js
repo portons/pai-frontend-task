@@ -30,6 +30,12 @@ export const defaultConfig = {
     placeholder: 'Find in conversation',
     noResults: 'No results',
   },
+  /** Which fields (by the names given to provideFind) the tick-mark preview shows. */
+  preview: {
+    title: null,
+    subtitle: null,
+    body: 'text',
+  },
 }
 
 /** Merge one level of sections, so a partial override keeps its siblings. */

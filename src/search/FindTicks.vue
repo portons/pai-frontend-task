@@ -26,22 +26,18 @@
         :style="{ top: `${preview.pct}%` }"
       >
         <div
-          v-if="preview.title || preview.subtitle"
+          v-if="preview.title.length || preview.subtitle.length"
           class="mb-1 flex items-baseline justify-between gap-3"
         >
-          <span class="truncate font-semibold text-gray-900" v-text="preview.title" />
-          <span class="shrink-0 text-gray-400 tabular-nums" v-text="preview.subtitle" />
+          <span class="truncate font-semibold text-gray-900">
+            <Marked :segments="preview.title" :active="preview.index" />
+          </span>
+          <span class="shrink-0 text-gray-400 tabular-nums">
+            <Marked :segments="preview.subtitle" :active="preview.index" />
+          </span>
         </div>
         <p class="line-clamp-3 leading-relaxed text-gray-700">
-          <template v-for="(seg, i) in preview.segments" :key="i">
-            <mark
-              v-if="seg.match"
-              class="find-pop-mark"
-              :class="{ 'find-pop-mark-active': seg.match.index === preview.index }"
-              >{{ seg.text }}</mark
-            >
-            <template v-else>{{ seg.text }}</template>
-          </template>
+          <Marked :segments="preview.body" :active="preview.index" />
         </p>
         <div class="mt-1.5 text-[10px] font-medium tracking-wide text-gray-400 uppercase">
           Match {{ preview.index + 1 }} of {{ total }}
@@ -53,7 +49,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, h, nextTick, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 import { findMarks, scrollParent } from './dom'
 import { segment } from './match'
 import { useFind } from './useFind'
@@ -61,7 +57,7 @@ import { useFind } from './useFind'
 /** px, must match the `w-3` track above. */
 const TRACK_WIDTH = 12
 
-const { matches, matchesFor, current, total, goTo, getText, getMeta, config } = useFind()
+const { matches, matchesFor, current, total, goTo, fieldText, config } = useFind()
 const root = useTemplateRef('root')
 const ticks = ref([])
 const frame = ref({})
@@ -119,14 +115,30 @@ const preview = computed(() => {
   const match = hovered.value && matches.value[hovered.value.index]
   if (!match) return null
   const { index, pct } = hovered.value
+  const marked = (field) =>
+    field ? segment(fieldText(match.item, field), matchesFor(match.id, field)) : []
   return {
     index,
     pct,
-    ...getMeta(match.item),
-    segments: segment(getText(match.item), matchesFor(match.id)),
+    title: marked(config.preview.title),
+    subtitle: marked(config.preview.subtitle),
+    body: marked(config.preview.body),
     anchor: pct < 15 ? 'find-pop-top' : pct > 85 ? 'find-pop-bottom' : 'find-pop-center',
   }
 })
+
+/** Segments as text nodes and <mark>s, the active match emphasised. */
+const Marked = ({ segments, active }) =>
+  segments.map((seg) =>
+    seg.match
+      ? h(
+          'mark',
+          { class: ['find-pop-mark', { 'find-pop-mark-active': seg.match.index === active }] },
+          seg.text,
+        )
+      : seg.text,
+  )
+Marked.props = ['segments', 'active']
 </script>
 
 <style scoped>

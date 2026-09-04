@@ -24,8 +24,9 @@
         <span
           :class="{ 'pr-4': item.incoming, 'pl-4': !item.incoming }"
           class="text-sm font-bold text-text"
-          v-text="item.from"
-        />
+        >
+          <HighlightedText :text="item.from" :id="item.id" field="from" />
+        </span>
       </div>
       <p
         class="BaseMessage-content text-sm font-normal whitespace-break-spaces text-text break-words !break-all"
@@ -37,11 +38,9 @@
         :class="{ 'justify-end': item.incoming }"
         class="flex items-center space-x-1 !-mb-3 pt-2"
       >
-        <span
-          class="text-xs font-normal text-gray-500"
-          :class="{ 'text-end': item.incoming }"
-          v-text="item.created"
-        />
+        <span class="text-xs font-normal text-gray-500" :class="{ 'text-end': item.incoming }">
+          <HighlightedText :text="item.created" :id="item.id" field="created" />
+        </span>
       </div>
     </div>
   </div>

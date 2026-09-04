@@ -18,5 +18,8 @@ import ChatMessage from './components/ChatMessage.vue'
 import { FindBar, provideFind } from './search'
 import items from './assets/msgs.json'
 
-provideFind(items, { getMeta: (item) => ({ title: item.from, subtitle: item.created }) })
+provideFind(items, {
+  fields: { from: (m) => m.from, text: (m) => m.text, created: (m) => m.created },
+  config: { preview: { title: 'from', subtitle: 'created' } },
+})
 </script>
