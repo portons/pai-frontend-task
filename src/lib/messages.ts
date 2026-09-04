@@ -1,5 +1,5 @@
-import type { ApiMessage, DayGroup, Message } from '../types'
-import { formatDay, parseCreated } from './dates'
+import type { ApiMessage, DayGroup, Message } from '../types';
+import { formatDay, parseCreated } from './dates';
 
 /** API rows to app messages: pick the fields the app uses and parse the timestamp. */
 export function fromApi(rows: ApiMessage[]): Message[] {
@@ -9,17 +9,17 @@ export function fromApi(rows: ApiMessage[]): Message[] {
     from: row.from,
     text: row.text,
     created: parseCreated(row.created),
-  }))
+  }));
 }
 
 /** Split an ordered list of messages into runs of the same calendar day. */
 export function groupByDay(messages: Message[]): DayGroup[] {
-  const days: DayGroup[] = []
+  const days: DayGroup[] = [];
   for (const message of messages) {
-    const key = message.created.toDateString()
-    const last = days.at(-1)
-    if (last?.key === key) last.items.push(message)
-    else days.push({ key, label: formatDay(message.created), items: [message] })
+    const key = message.created.toDateString();
+    const last = days.at(-1);
+    if (last?.key === key) last.items.push(message);
+    else days.push({ key, label: formatDay(message.created), items: [message] });
   }
-  return days
+  return days;
 }

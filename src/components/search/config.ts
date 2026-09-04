@@ -1,4 +1,4 @@
-import type { FindConfig, FindConfigOverrides } from './types'
+import type { FindConfig, FindConfigOverrides } from './types';
 
 /**
  * Every tunable of the find module in one place. Override any subset per
@@ -42,7 +42,7 @@ export const defaultConfig: FindConfig = {
     subtitle: null,
     body: 'text',
   },
-}
+};
 
 /** Merge one level of sections, so a partial override keeps its siblings. */
 export const mergeConfig = (o: FindConfigOverrides = {}): FindConfig => ({
@@ -51,4 +51,4 @@ export const mergeConfig = (o: FindConfigOverrides = {}): FindConfig => ({
   behavior: { ...defaultConfig.behavior, ...o.behavior },
   text: { ...defaultConfig.text, ...o.text },
   preview: { ...defaultConfig.preview, ...o.preview },
-})
+});

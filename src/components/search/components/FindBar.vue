@@ -64,22 +64,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, useTemplateRef, watch } from 'vue'
-import { selectText } from '../lib/dom'
-import FindTicks from './FindTicks.vue'
-import { useFind } from '../composables/useFind'
-import { useFindHotkeys } from '../composables/useFindHotkeys'
+import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { selectText } from '../lib/dom';
+import FindTicks from './FindTicks.vue';
+import { useFind } from '../composables/useFind';
+import { useFindHotkeys } from '../composables/useFindHotkeys';
 
-const { query, isOpen, matches, current, total, open, close, next, prev, config } = useFind()
+const { query, isOpen, matches, current, total, open, close, next, prev, config } = useFind();
 
 const vars = {
   '--find-bar-enter-ms': `${config.motion.barEnterMs}ms`,
   '--find-bar-leave-ms': `${config.motion.barLeaveMs}ms`,
   '--find-shake-ms': `${config.motion.shakeMs}ms`,
-}
+};
 
-const input = useTemplateRef<HTMLInputElement>('input')
-const shaking = ref(false)
+const input = useTemplateRef<HTMLInputElement>('input');
+const shaking = ref(false);
 
 const announcement = computed(() =>
   !query.value
@@ -87,21 +87,21 @@ const announcement = computed(() =>
     : total.value
       ? `${current.value + 1} of ${total.value}`
       : config.text.noResults,
-)
+);
 
 /** Close, leaving the current match selected so the reader keeps their place. */
 function dismiss() {
-  const match = config.behavior.selectMatchOnClose && matches.value[current.value]
-  const host = match && document.querySelector('mark[aria-current]')?.parentElement
-  close()
-  if (host) nextTick(() => selectText(host, match.start, match.end))
+  const match = config.behavior.selectMatchOnClose && matches.value[current.value];
+  const host = match && document.querySelector('mark[aria-current]')?.parentElement;
+  close();
+  if (host) nextTick(() => selectText(host, match.start, match.end));
 }
 
 /** Step through matches, or shake when there is nothing to step to. */
 function jump(step: () => void) {
-  if (!isOpen.value) return
-  if (total.value) step()
-  else shaking.value = true
+  if (!isOpen.value) return;
+  if (total.value) step();
+  else shaking.value = true;
 }
 
 const buttons = [
@@ -120,31 +120,31 @@ const buttons = [
     needsResults: true,
   },
   { label: 'Close', hint: 'Esc', icon: 'm6 6 8 8M14 6l-8 8', run: dismiss },
-]
+];
 
 async function focusInput() {
-  await nextTick()
-  input.value?.focus()
-  input.value?.select()
+  await nextTick();
+  input.value?.focus();
+  input.value?.select();
 }
 
 // Focus moves into the bar on open and back to where it was on close.
-let previouslyFocused: Element | null = null
+let previouslyFocused: Element | null = null;
 watch(isOpen, (opened) => {
   if (opened) {
-    previouslyFocused = document.activeElement
-    focusInput()
+    previouslyFocused = document.activeElement;
+    focusInput();
   } else if (previouslyFocused instanceof HTMLElement && previouslyFocused.isConnected) {
-    previouslyFocused.focus()
+    previouslyFocused.focus();
   }
-})
+});
 
 useFindHotkeys({
   onFind: () => (isOpen.value ? focusInput() : open()),
   onClose: dismiss,
   onNext: () => jump(next),
   onPrev: () => jump(prev),
-})
+});
 </script>
 
 <style scoped>

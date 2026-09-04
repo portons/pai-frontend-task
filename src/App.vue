@@ -27,18 +27,18 @@
 </template>
 
 <script setup lang="ts">
-import ChatHeader from './components/chat/ChatHeader.vue'
-import ChatMessage from './components/chat/ChatMessage.vue'
-import { FindBar, provideFind } from './components/search'
-import raw from './assets/msgs.json'
-import { formatDateTime } from './lib/dates'
-import { fromApi, groupByDay } from './lib/messages'
+import ChatHeader from './components/chat/ChatHeader.vue';
+import ChatMessage from './components/chat/ChatMessage.vue';
+import { FindBar, provideFind } from './components/search';
+import raw from './assets/msgs.json';
+import { formatDateTime } from './lib/dates';
+import { fromApi, groupByDay } from './lib/messages';
 
-const items = fromApi(raw)
-const days = groupByDay(items)
+const items = fromApi(raw);
+const days = groupByDay(items);
 
 provideFind(items, {
   fields: { from: (m) => m.from, text: (m) => m.text, created: (m) => formatDateTime(m.created) },
   config: { preview: { title: 'from', subtitle: 'created' } },
-})
+});
 </script>

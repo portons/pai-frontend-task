@@ -1,5 +1,5 @@
-import { nextTick } from 'vue'
-import { findMarks, scrollParent } from './dom'
+import { nextTick } from 'vue';
+import { findMarks, scrollParent } from './dom';
 
 /**
  * Chrome's rule for where a search starts: the first match at or below the
@@ -7,13 +7,18 @@ import { findMarks, scrollParent } from './dom'
  * they were.
  */
 export async function nearestVisibleMatch(): Promise<number> {
-  await nextTick()
-  const marks = findMarks()
-  const first = marks[0]
-  if (!first) return 0
-  const viewportTop = scrollParent(first).getBoundingClientRect().top
+  await nextTick();
+
+  const marks = findMarks();
+  const first = marks[0];
+
+  if (!first) return 0;
+
+  const viewportTop = scrollParent(first).getBoundingClientRect().top;
+
   for (const mark of marks) {
-    if (mark.getBoundingClientRect().bottom >= viewportTop) return Number(mark.dataset.findIndex)
+    if (mark.getBoundingClientRect().bottom >= viewportTop) return Number(mark.dataset.findIndex);
   }
-  return 0
+
+  return 0;
 }

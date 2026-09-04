@@ -14,10 +14,10 @@
  * Colours, motion and copy are tunable through provideFind's `config` option;
  * see config.ts.
  */
-export { provideFind, useFind } from './composables/useFind'
-export { createFind } from './lib/createFind'
-export { defaultConfig } from './config'
-export { findRanges, segment } from './lib/match'
+export { provideFind, useFind } from './composables/useFind';
+export { createFind } from './lib/createFind';
+export { defaultConfig } from './config';
+export { findRanges, segment } from './lib/match';
 export type {
   Find,
   FindConfig,
@@ -26,6 +26,6 @@ export type {
   Match,
   Range,
   Segment,
-} from './types'
-export { default as FindBar } from './components/FindBar.vue'
-export { default as HighlightedText } from './components/HighlightedText.vue'
+} from './types';
+export { default as FindBar } from './components/FindBar.vue';
+export { default as HighlightedText } from './components/HighlightedText.vue';

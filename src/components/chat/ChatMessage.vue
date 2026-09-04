@@ -35,10 +35,10 @@
 </template>
 
 <script setup lang="ts">
-import { formatDateTime } from '../../lib/dates'
-import { initialOf } from '../../lib/initial'
-import { HighlightedText } from '../search'
-import type { Message } from '../../types'
+import { formatDateTime } from '../../lib/dates';
+import { initialOf } from '../../lib/initial';
+import { HighlightedText } from '../search';
+import type { Message } from '../../types';
 
-defineProps<{ item: Message }>()
+defineProps<{ item: Message }>();
 </script>

@@ -1,11 +1,11 @@
-import { inject, provide, type InjectionKey, type MaybeRefOrGetter } from 'vue'
-import { createFind } from '../lib/createFind'
-import { nearestVisibleMatch } from '../lib/nearestVisibleMatch'
-import type { Find, FindOptions } from '../types'
+import { inject, provide, type InjectionKey, type MaybeRefOrGetter } from 'vue';
+import { createFind } from '../lib/createFind';
+import { nearestVisibleMatch } from '../lib/nearestVisibleMatch';
+import type { Find, FindOptions } from '../types';
 
 // A registered symbol survives module hot-reloads, so editing this file in
 // dev does not orphan already-mounted consumers.
-const KEY: InjectionKey<Find> = Symbol.for('find-in-conversation')
+const KEY: InjectionKey<Find> = Symbol.for('find-in-conversation');
 
 /**
  * Create the find state and make it available to every <FindBar> and
@@ -15,14 +15,14 @@ export function provideFind<T extends object>(
   items: MaybeRefOrGetter<T[]>,
   options?: FindOptions<T>,
 ): Find<T> {
-  const find = createFind(items, { startAt: nearestVisibleMatch, ...options })
-  provide(KEY, find)
-  return find
+  const find = createFind(items, { startAt: nearestVisibleMatch, ...options });
+  provide(KEY, find);
+  return find;
 }
 
 /** The find state provided by the nearest provideFind() ancestor. */
 export function useFind(): Find {
-  const find = inject(KEY, null)
-  if (!find) throw new Error('useFind() called without provideFind() in an ancestor component')
-  return find
+  const find = inject(KEY, null);
+  if (!find) throw new Error('useFind() called without provideFind() in an ancestor component');
+  return find;
 }

@@ -1,15 +1,15 @@
-import type { Range, Segment } from '../types'
+import type { Range, Segment } from '../types';
 
 /** Pure text matching. No Vue, no DOM. */
 
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
  * Case- and accent-insensitive form of a string: "Café" → "cafe", "ß" → "ss".
  * The upper-then-lower round trip is full case folding; toLowerCase() alone
  * leaves "ß" and "ς" unmatched against "ss" and "σ".
  */
-const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toUpperCase().toLowerCase()
+const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toUpperCase().toLowerCase();
 
 /**
  * Folds `text` one character at a time, remembering for every folded code
@@ -17,20 +17,20 @@ const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toUpperCas
  * of a string, so offsets found in the folded text must be mapped back.
  */
 function foldWithOffsets(text: string) {
-  let folded = ''
-  const starts: number[] = []
-  const ends: number[] = []
-  let offset = 0
+  let folded = '';
+  const starts: number[] = [];
+  const ends: number[] = [];
+  let offset = 0;
   for (const char of text) {
-    const f = fold(char)
+    const f = fold(char);
     for (let i = 0; i < f.length; i++) {
-      starts.push(offset)
-      ends.push(offset + char.length)
+      starts.push(offset);
+      ends.push(offset + char.length);
     }
-    folded += f
-    offset += char.length
+    folded += f;
+    offset += char.length;
   }
-  return { folded, starts, ends }
+  return { folded, starts, ends };
 }
 
 /**
@@ -38,14 +38,17 @@ function foldWithOffsets(text: string) {
  * Sorted, non-overlapping, in original-string offsets.
  */
 export function findRanges(text: string, query: string): Range[] {
-  const needle = foldWithOffsets(query).folded
-  if (!needle) return []
-  const { folded, starts, ends } = foldWithOffsets(text)
-  const re = new RegExp(escapeRegExp(needle), 'g')
+  const needle = foldWithOffsets(query).folded;
+
+  if (!needle) return [];
+
+  const { folded, starts, ends } = foldWithOffsets(text);
+  const re = new RegExp(escapeRegExp(needle), 'g');
+
   return Array.from(folded.matchAll(re), (m) => ({
     start: starts[m.index]!,
     end: ends[m.index + m[0].length - 1]!,
-  }))
+  }));
 }
 
 /**
@@ -54,13 +57,17 @@ export function findRanges(text: string, query: string): Range[] {
  * `ranges` must be sorted and non-overlapping.
  */
 export function segment<M extends Range>(text: string, ranges: readonly M[]): Segment<M>[] {
-  const out: Segment<M>[] = []
-  let pos = 0
+  const out: Segment<M>[] = [];
+  let pos = 0;
+
   for (const range of ranges) {
-    if (range.start > pos) out.push({ text: text.slice(pos, range.start) })
-    out.push({ text: text.slice(range.start, range.end), match: range })
-    pos = range.end
+    if (range.start > pos) out.push({ text: text.slice(pos, range.start) });
+
+    out.push({ text: text.slice(range.start, range.end), match: range });
+    pos = range.end;
   }
-  if (pos < text.length) out.push({ text: text.slice(pos) })
-  return out
+
+  if (pos < text.length) out.push({ text: text.slice(pos) });
+
+  return out;
 }

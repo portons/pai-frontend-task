@@ -15,24 +15,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { segment } from '../lib/match'
-import { useFind } from '../composables/useFind'
-import { vScrollIntoView } from '../directives/vScrollIntoView'
+import { computed } from 'vue';
+import { segment } from '../lib/match';
+import { useFind } from '../composables/useFind';
+import { vScrollIntoView } from '../directives/vScrollIntoView';
 
 const props = withDefaults(
   defineProps<{
-    text: string
+    text: string;
     /** The message id this text belongs to, as seen by provideFind(). */
-    id: PropertyKey
+    id: PropertyKey;
     /** Which searchable field this text is, as named in provideFind's `fields`. */
-    field?: string
+    field?: string;
   }>(),
   { field: 'text' },
-)
+);
 
-const { matchesFor, current, config } = useFind()
-const segments = computed(() => segment(props.text, matchesFor(props.id, props.field)))
+const { matchesFor, current, config } = useFind();
+const segments = computed(() => segment(props.text, matchesFor(props.id, props.field)));
 
 const vars = {
   '--find-match': config.colors.match,
@@ -41,7 +41,7 @@ const vars = {
   '--find-active-text': config.colors.activeMatchText,
   '--find-outline': config.colors.activeMatchOutline,
   '--find-ring-ms': `${config.motion.ringMs}ms`,
-}
+};
 </script>
 
 <style scoped>

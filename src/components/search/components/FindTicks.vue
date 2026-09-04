@@ -59,24 +59,24 @@ import {
   watch,
   type CSSProperties,
   type FunctionalComponent,
-} from 'vue'
-import { findMarks, scrollParent } from '../lib/dom'
-import { segment } from '../lib/match'
-import type { Match, Segment } from '../types'
-import { useFind } from '../composables/useFind'
+} from 'vue';
+import { findMarks, scrollParent } from '../lib/dom';
+import { segment } from '../lib/match';
+import type { Match, Segment } from '../types';
+import { useFind } from '../composables/useFind';
 
 /** px, must match the `w-3` track above. */
-const TRACK_WIDTH = 12
+const TRACK_WIDTH = 12;
 
-const { matches, matchesFor, current, total, goTo, fieldText, config } = useFind()
+const { matches, matchesFor, current, total, goTo, fieldText, config } = useFind();
 interface Tick {
-  index: number
-  pct: number
+  index: number;
+  pct: number;
 }
 
-const root = useTemplateRef<HTMLElement>('root')
-const ticks = ref<Tick[]>([])
-const frame = ref<CSSProperties>({})
+const root = useTemplateRef<HTMLElement>('root');
+const ticks = ref<Tick[]>([]);
+const frame = ref<CSSProperties>({});
 const vars = {
   '--find-tick': config.colors.tick,
   '--find-tick-active': config.colors.activeTick,
@@ -84,58 +84,58 @@ const vars = {
   '--find-match-text': config.colors.matchText,
   '--find-active': config.colors.activeMatch,
   '--find-active-text': config.colors.activeMatchText,
-}
+};
 
 // Chrome's scrollbar markers: the track covers the list's scroll area and
 // each tick sits where its match lives in the full scroll height.
 async function measure() {
-  await nextTick()
-  const marks = findMarks()
+  await nextTick();
+  const marks = findMarks();
   if (marks.length === 0 || !root.value) {
-    ticks.value = []
-    return
+    ticks.value = [];
+    return;
   }
-  const scroller = scrollParent(marks[0]!)
-  const host = root.value.offsetParent ?? root.value.parentElement
-  if (!host) return
-  const area = scroller.getBoundingClientRect()
-  const origin = host.getBoundingClientRect()
+  const scroller = scrollParent(marks[0]!);
+  const host = root.value.offsetParent ?? root.value.parentElement;
+  if (!host) return;
+  const area = scroller.getBoundingClientRect();
+  const origin = host.getBoundingClientRect();
   frame.value = {
     top: `${area.top - origin.top - host.clientTop}px`,
     left: `${area.right - origin.left - host.clientLeft - TRACK_WIDTH}px`,
     height: `${area.height}px`,
-  }
+  };
   ticks.value = Array.from(marks, (mark) => ({
     index: Number(mark.dataset.findIndex),
     pct:
       ((mark.getBoundingClientRect().top - area.top + scroller.scrollTop) / scroller.scrollHeight) *
       100,
-  }))
-  observe(scroller)
+  }));
+  observe(scroller);
 }
-watch(matches, measure)
+watch(matches, measure);
 
-let observer: ResizeObserver | null = null
-let observed: Element | null = null
+let observer: ResizeObserver | null = null;
+let observed: Element | null = null;
 function observe(scroller: Element) {
-  if (observed === scroller) return
-  observer?.disconnect()
-  observed = scroller
-  observer = new ResizeObserver(() => measure())
-  observer.observe(scroller)
+  if (observed === scroller) return;
+  observer?.disconnect();
+  observed = scroller;
+  observer = new ResizeObserver(() => measure());
+  observer.observe(scroller);
 }
-onUnmounted(() => observer?.disconnect())
+onUnmounted(() => observer?.disconnect());
 
 // Hovering a tick previews its message, anchored beside the tick and kept
 // inside the track near the top and bottom edges.
-const hovered = ref<Tick | null>(null)
+const hovered = ref<Tick | null>(null);
 const preview = computed(() => {
-  const tick = hovered.value
-  const match = tick && matches.value[tick.index]
-  if (!tick || !match) return null
-  const { index, pct } = tick
+  const tick = hovered.value;
+  const match = tick && matches.value[tick.index];
+  if (!tick || !match) return null;
+  const { index, pct } = tick;
   const marked = (field: string | null) =>
-    field ? segment(fieldText(match.item, field), matchesFor(match.id, field)) : []
+    field ? segment(fieldText(match.item, field), matchesFor(match.id, field)) : [];
   return {
     index,
     pct,
@@ -143,8 +143,8 @@ const preview = computed(() => {
     subtitle: marked(config.preview.subtitle),
     body: marked(config.preview.body),
     anchor: pct < 15 ? 'find-pop-top' : pct > 85 ? 'find-pop-bottom' : 'find-pop-center',
-  }
-})
+  };
+});
 
 /** Segments as text nodes and <mark>s, the active match emphasised. */
 const Marked: FunctionalComponent<{ segments: Segment<Match>[]; active: number }> = ({
@@ -159,8 +159,8 @@ const Marked: FunctionalComponent<{ segments: Segment<Match>[]; active: number }
           seg.text,
         )
       : seg.text,
-  )
-Marked.props = ['segments', 'active']
+  );
+Marked.props = ['segments', 'active'];
 </script>
 
 <style scoped>

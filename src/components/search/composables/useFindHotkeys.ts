@@ -1,10 +1,10 @@
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue';
 
 interface Handlers {
-  onFind(): void
-  onClose(): void
-  onNext(): void
-  onPrev(): void
+  onFind(): void;
+  onClose(): void;
+  onNext(): void;
+  onPrev(): void;
 }
 
 /**
@@ -13,16 +13,16 @@ interface Handlers {
  */
 export function useFindHotkeys(on: Handlers) {
   const onKeydown = (e: KeyboardEvent) => {
-    const key = e.key.toLowerCase()
+    const key = e.key.toLowerCase();
     if ((e.metaKey || e.ctrlKey) && (key === 'f' || key === 'g')) {
-      e.preventDefault()
-      if (key === 'f') on.onFind()
-      else if (e.shiftKey) on.onPrev()
-      else on.onNext()
+      e.preventDefault();
+      if (key === 'f') on.onFind();
+      else if (e.shiftKey) on.onPrev();
+      else on.onNext();
     } else if (key === 'escape') {
-      on.onClose()
+      on.onClose();
     }
-  }
-  onMounted(() => window.addEventListener('keydown', onKeydown))
-  onUnmounted(() => window.removeEventListener('keydown', onKeydown))
+  };
+  onMounted(() => window.addEventListener('keydown', onKeydown));
+  onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 }
