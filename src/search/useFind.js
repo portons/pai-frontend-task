@@ -2,7 +2,9 @@ import { inject, provide } from 'vue'
 import { createFind } from './createFind'
 import { nearestVisibleMatch } from './nearestVisibleMatch'
 
-const KEY = Symbol('find')
+// A registered symbol survives module hot-reloads, so editing this file in
+// dev does not orphan already-mounted consumers.
+const KEY = Symbol.for('find-in-conversation')
 
 /**
  * Create the find state and make it available to every <FindBar> and
