@@ -60,6 +60,7 @@ import {
   type CSSProperties,
   type FunctionalComponent,
 } from 'vue';
+import { markStyles } from '../config';
 import { findMarks, scrollParent } from '../lib/dom';
 import { segment } from '../lib/match';
 import type { MarkedProps, Tick } from '../types';
@@ -76,11 +77,8 @@ const frame = ref<CSSProperties>({});
 const vars = {
   '--find-tick': config.colors.tick,
   '--find-tick-active': config.colors.activeTick,
-  '--find-match': config.colors.match,
-  '--find-match-text': config.colors.matchText,
-  '--find-active': config.colors.activeMatch,
-  '--find-active-text': config.colors.activeMatchText,
 };
+const style = markStyles(config);
 
 // Chrome's scrollbar markers: the track covers the list's scroll area and
 // each tick sits where its match lives in the full scroll height.
@@ -148,7 +146,10 @@ const Marked: FunctionalComponent<MarkedProps> = ({ segments, active }) =>
     seg.match
       ? h(
           'mark',
-          { class: ['find-pop-mark', { 'find-pop-mark-active': seg.match.index === active }] },
+          {
+            class: 'rounded-sm px-0.5',
+            style: seg.match.index === active ? style.active : style.match,
+          },
           seg.text,
         )
       : seg.text,
@@ -213,18 +214,6 @@ Marked.props = ['segments', 'active'];
 }
 .find-pop-bottom .find-pop-arrow {
   top: calc(100% - 12px);
-}
-
-/* :deep — the marks come from the Marked functional component, outside this scope. */
-.find-pop :deep(.find-pop-mark) {
-  border-radius: 3px;
-  padding: 0 2px;
-  color: var(--find-match-text);
-  background: var(--find-match);
-}
-.find-pop :deep(.find-pop-mark-active) {
-  background: var(--find-active);
-  color: var(--find-active-text);
 }
 
 .find-pop-enter-active,

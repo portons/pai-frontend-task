@@ -29,12 +29,10 @@ export interface FindConfig {
     matchText: string;
     activeMatch: string;
     activeMatchText: string;
-    activeMatchOutline: string;
     tick: string;
     activeTick: string;
   };
   motion: {
-    ringMs: number;
     shakeMs: number;
     barEnterMs: number;
     barLeaveMs: number;

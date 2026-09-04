@@ -1,22 +1,21 @@
 <template>
-  <template v-for="(seg, i) in segments" :key="i">
+  <template v-for="(piece, index) in pieces" :key="index">
     <mark
-      v-if="seg.match"
-      v-scroll-into-view="seg.match.index === current"
-      :data-find-index="seg.match.index"
-      :aria-current="seg.match.index === current ? 'true' : undefined"
-      class="find-mark"
-      :class="{ 'find-mark-active': seg.match.index === current }"
-      :style="vars"
-      >{{ seg.text }}</mark
+      v-if="piece.match"
+      v-scroll-into-view="piece.match.index === current"
+      :data-find-index="piece.match.index"
+      :aria-current="piece.match.index === current ? 'true' : undefined"
+      class="rounded-sm px-0.5"
+      :style="piece.match.index === current ? style.active : style.match"
+      >{{ piece.text }}</mark
     >
-    <template v-else>{{ seg.text }}</template>
+    <template v-else>{{ piece.text }}</template>
   </template>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { DEFAULT_FIELD } from '../config';
+import { DEFAULT_FIELD, markStyles } from '../config';
 import { segment } from '../lib/match';
 import { useFind } from '../composables/useFind';
 import { vScrollIntoView } from '../directives/vScrollIntoView';
@@ -25,55 +24,6 @@ import type { HighlightedTextProps } from '../types';
 const { text, id, field = DEFAULT_FIELD } = defineProps<HighlightedTextProps>();
 
 const { matchesFor, current, config } = useFind();
-const segments = computed(() => segment(text, matchesFor(id, field)));
-
-const vars = {
-  '--find-match': config.colors.match,
-  '--find-match-text': config.colors.matchText,
-  '--find-active': config.colors.activeMatch,
-  '--find-active-text': config.colors.activeMatchText,
-  '--find-outline': config.colors.activeMatchOutline,
-  '--find-ring-ms': `${config.motion.ringMs}ms`,
-};
+const style = markStyles(config);
+const pieces = computed(() => segment(text, matchesFor(id, field)));
 </script>
-
-<style scoped>
-.find-mark {
-  border-radius: 3px;
-  padding: 0 2px;
-  background: var(--find-match);
-  color: var(--find-match-text);
-  transition:
-    background-color 150ms,
-    color 150ms;
-}
-
-/* The ring is a box-shadow, not a transform, so a long match still wraps. */
-.find-mark-active {
-  background: var(--find-active);
-  color: var(--find-active-text);
-  box-shadow: 0 0 0 1.5px var(--find-outline);
-  animation: find-ring var(--find-ring-ms) ease-out;
-}
-
-@keyframes find-ring {
-  from {
-    box-shadow:
-      0 0 0 1.5px var(--find-outline),
-      0 0 0 7px color-mix(in srgb, var(--find-active) 60%, transparent);
-  }
-  to {
-    box-shadow:
-      0 0 0 1.5px var(--find-outline),
-      0 0 0 0 transparent;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .find-mark,
-  .find-mark-active {
-    transition: none;
-    animation: none;
-  }
-}
-</style>

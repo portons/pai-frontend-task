@@ -15,15 +15,11 @@ export const defaultConfig: FindConfig = {
     /** The current match: one step up the same ramp (amber-400), dark text for contrast. */
     activeMatch: '#fbbf24',
     activeMatchText: '#1c1917',
-    /** Thin outline so the current match reads as an object, not just a warmer fill. */
-    activeMatchOutline: '#b45309',
     /** Scrollbar tick marks, one per match. */
     tick: '#f59e0b',
     activeTick: '#b45309',
   },
   motion: {
-    /** Contracting ring when a match becomes current. */
-    ringMs: 450,
     /** Bar shake when Enter has nothing to step to. */
     shakeMs: 300,
     barEnterMs: 200,
@@ -59,6 +55,12 @@ export const defaultOptions: Required<Omit<FindOptions<object>, 'config'>> = {
   getId: (item) => prop(item, 'id') as PropertyKey,
   startAt: () => 0,
 };
+
+/** Inline styles for a <mark>: every match, and the current one. */
+export const markStyles = ({ colors }: FindConfig) => ({
+  match: { background: colors.match, color: colors.matchText },
+  active: { background: colors.activeMatch, color: colors.activeMatchText },
+});
 
 /** Merge one level of sections, so a partial override keeps its siblings. */
 export const mergeConfig = (overrides: FindConfigOverrides = {}): FindConfig => ({
