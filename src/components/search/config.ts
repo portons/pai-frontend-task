@@ -61,10 +61,10 @@ export const defaultOptions: Required<Omit<FindOptions<object>, 'config'>> = {
 };
 
 /** Merge one level of sections, so a partial override keeps its siblings. */
-export const mergeConfig = (o: FindConfigOverrides = {}): FindConfig => ({
-  colors: { ...defaultConfig.colors, ...o.colors },
-  motion: { ...defaultConfig.motion, ...o.motion },
-  behavior: { ...defaultConfig.behavior, ...o.behavior },
-  text: { ...defaultConfig.text, ...o.text },
-  preview: { ...defaultConfig.preview, ...o.preview },
+export const mergeConfig = (overrides: FindConfigOverrides = {}): FindConfig => ({
+  colors: { ...defaultConfig.colors, ...overrides.colors },
+  motion: { ...defaultConfig.motion, ...overrides.motion },
+  behavior: { ...defaultConfig.behavior, ...overrides.behavior },
+  text: { ...defaultConfig.text, ...overrides.text },
+  preview: { ...defaultConfig.preview, ...overrides.preview },
 });

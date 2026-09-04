@@ -38,7 +38,11 @@ const items = fromApi(raw);
 const days = groupByDay(items);
 
 provideFind(items, {
-  fields: { from: (m) => m.from, text: (m) => m.text, created: (m) => formatDateTime(m.created) },
+  fields: {
+    from: (message) => message.from,
+    text: (message) => message.text,
+    created: (message) => formatDateTime(message.created),
+  },
   config: { preview: { title: 'from', subtitle: 'created' } },
 });
 </script>

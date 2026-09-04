@@ -2,14 +2,15 @@ import type { Range, Segment } from '../types';
 
 /** Pure text matching. No Vue, no DOM. */
 
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
  * Case- and accent-insensitive form of a string: "Café" → "cafe", "ß" → "ss".
  * The upper-then-lower round trip is full case folding; toLowerCase() alone
  * leaves "ß" and "ς" unmatched against "ss" and "σ".
  */
-const fold = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toUpperCase().toLowerCase();
+const fold = (text: string) =>
+  text.normalize('NFD').replace(/\p{M}/gu, '').toUpperCase().toLowerCase();
 
 /**
  * Folds `text` one character at a time, remembering for every folded code
@@ -22,12 +23,12 @@ function foldWithOffsets(text: string) {
   const ends: number[] = [];
   let offset = 0;
   for (const char of text) {
-    const f = fold(char);
-    for (let i = 0; i < f.length; i++) {
+    const foldedChar = fold(char);
+    for (let unit = 0; unit < foldedChar.length; unit++) {
       starts.push(offset);
       ends.push(offset + char.length);
     }
-    folded += f;
+    folded += foldedChar;
     offset += char.length;
   }
   return { folded, starts, ends };
@@ -43,11 +44,11 @@ export function findRanges(text: string, query: string): Range[] {
   if (!needle) return [];
 
   const { folded, starts, ends } = foldWithOffsets(text);
-  const re = new RegExp(escapeRegExp(needle), 'g');
+  const pattern = new RegExp(escapeRegExp(needle), 'g');
 
-  return Array.from(folded.matchAll(re), (m) => ({
-    start: starts[m.index]!,
-    end: ends[m.index + m[0].length - 1]!,
+  return Array.from(folded.matchAll(pattern), (found) => ({
+    start: starts[found.index]!,
+    end: ends[found.index + found[0].length - 1]!,
   }));
 }
 

@@ -20,7 +20,7 @@ export const findMarks = () => document.querySelectorAll<HTMLElement>('[data-fin
  */
 export function selectText(el: Element, start: number, end: number) {
   const node = Array.from(el.childNodes).find(
-    (n): n is Text => n.nodeType === Node.TEXT_NODE && (n as Text).length >= end,
+    (node): node is Text => node.nodeType === Node.TEXT_NODE && (node as Text).length >= end,
   );
 
   if (!node) return;
